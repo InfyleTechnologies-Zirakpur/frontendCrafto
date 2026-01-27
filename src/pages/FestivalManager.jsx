@@ -1332,13 +1332,553 @@
 // export default FestivalManager;
 
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { Button, Modal, Form, Table, Image, Spinner } from "react-bootstrap";
+// import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// const API_URL = process.env.REACT_APP_API_URL || "https://crafto-backend-zqcn.onrender.com/api/festivals";
+// const RENDER_API = process.env.REACT_APP_RENDER_API || "https://crafto-backend-zqcn.onrender.com/api/render";
+
+// const FestivalManager = () => {
+//   const [festivals, setFestivals] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [editing, setEditing] = useState(null);
+
+//   const [search, setSearch] = useState("");
+//   const [page, setPage] = useState(1);
+//   const limit = 5;
+//   const [totalPages, setTotalPages] = useState(1);
+
+//   const [loadingList, setLoadingList] = useState(false);
+//   const [saving, setSaving] = useState(false);
+
+//   const [transitions, setTransitions] = useState([]);
+
+//   // ⭐ FULL CRAFTO STYLE DATA
+//   const [formData, setFormData] = useState({
+//     title: "",
+//     template: "",
+//     transition: "",
+//     status: "active",
+
+//     // Logo
+//     logo: null,
+//     preview: "",
+//     zoom: 1,
+//     x: 0,
+//     y: 0,
+
+//     // Banner
+//     banner: null,
+//     bannerPreview: "",
+//     bannerZoom: 1,
+//     bannerX: 0,
+//     bannerY: 0
+//   });
+
+//   // Load Transitions
+//   const fetchTransitions = async () => {
+//     try {
+//       const res = await axios.get("https://crafto-backend-zqcn.onrender.com/api/transitions");
+//       setTransitions(res.data.transitions || []);
+//     } catch (err) {
+//       console.error("Failed to load transitions", err);
+//     }
+//   };
+
+//   // Fetch Festival List
+//   const fetchData = async () => {
+//     try {
+//       setLoadingList(true);
+//       const res = await axios.get(API_URL, { params: { search, page, limit } });
+
+//       setFestivals(res.data.festivals || []);
+//       setTotalPages(res.data.pages || 1);
+//     } catch (err) {
+//       console.error(err);
+//       alert("Failed to load festivals");
+//     } finally {
+//       setLoadingList(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchData();
+//     fetchTransitions();
+//   }, [page, search]);
+
+//   // Handle Input Change
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+
+//     if (files && files.length) {
+//       const file = files[0];
+
+//       if (name === "banner") {
+//         return setFormData((prev) => ({
+//           ...prev,
+//           banner: file,
+//           bannerPreview: URL.createObjectURL(file),
+//         }));
+//       }
+
+//       return setFormData((prev) => ({
+//         ...prev,
+//         logo: file,
+//         preview: URL.createObjectURL(file),
+//       }));
+//     }
+
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Submit Form
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       setSaving(true);
+
+//       const data = new FormData();
+//       data.append("title", formData.title);
+//       data.append("template", formData.template);
+//       data.append("transition", formData.transition);
+//       data.append("status", formData.status);
+
+//       data.append("zoom", formData.zoom);
+//       data.append("offsetX", formData.x);
+//       data.append("offsetY", formData.y);
+
+//       data.append("bannerZoom", formData.bannerZoom);
+//       data.append("bannerX", formData.bannerX);
+//       data.append("bannerY", formData.bannerY);
+
+//       if (formData.logo) data.append("logo", formData.logo, formData.logo.name);
+//       if (formData.banner) data.append("banner", formData.banner, formData.banner.name);
+
+//       if (editing) await axios.put(`${API_URL}/${editing._id}`, data);
+//       else await axios.post(API_URL, data);
+
+//       handleClose();
+//       fetchData();
+//     } catch (err) {
+//       console.error(err);
+//       alert("Save failed");
+//     } finally {
+//       setSaving(false);
+//     }
+//   };
+
+//   // Edit Handler
+//   const handleEdit = (item) => {
+//     setEditing(item);
+
+//     setFormData({
+//       title: item.title || "",
+//       template: item.template || "",
+//       transition: item.transition || "",
+//       status: item.status || "active",
+
+//       logo: null,
+//       preview: item.logo || "",
+//       zoom: item.zoom || 1,
+//       x: item.offsetX || 0,
+//       y: item.offsetY || 0,
+
+//       banner: null,
+//       bannerPreview: item.banner?.url || item.banner || "",
+//       bannerZoom: item.bannerZoom || 1,
+//       bannerX: item.bannerX || 0,
+//       bannerY: item.bannerY || 0
+//     });
+
+//     setShowModal(true);
+//   };
+
+//   // Delete
+//   const handleDelete = async (id) => {
+//     if (!window.confirm("Delete this festival?")) return;
+//     try {
+//       await axios.delete(`${API_URL}/${id}`);
+//       fetchData();
+//     } catch (err) {
+//       console.error(err);
+//       alert("Delete failed");
+//     }
+//   };
+
+//   // Reset Form
+//   const handleClose = () => {
+//     setEditing(null);
+//     setFormData({
+//       title: "",
+//       template: "",
+//       transition: "",
+//       status: "active",
+//       logo: null,
+//       preview: "",
+//       zoom: 1,
+//       x: 0,
+//       y: 0,
+
+//       banner: null,
+//       bannerPreview: "",
+//       bannerZoom: 1,
+//       bannerX: 0,
+//       bannerY: 0
+//     });
+//     setShowModal(false);
+//   };
+
+//   // Render Video
+//   const renderVideo = async (id) => {
+//     try {
+//       const res = await axios.post(RENDER_API, { id });
+//       if (!res.data.videoUrl) return alert("No URL returned");
+//       window.open(res.data.videoUrl, "_blank");
+//     } catch (err) {
+//       console.error(err);
+//       alert("Render failed");
+//     }
+//   };
+
+//   return (
+//     <div>
+      
+//       {/* HEADER */}
+//       <div className="d-flex justify-content-between align-items-center mb-3">
+//         <h4>Festival Templates</h4>
+//         <Button onClick={() => setShowModal(true)}>
+//           <FaPlus /> Add Festival
+//         </Button>
+//       </div>
+
+//       {/* SEARCH */}
+//       <input
+//         type="text"
+//         className="form-control mb-3"
+//         placeholder="Search festival..."
+//         value={search}
+//         onChange={(e) => {
+//           setSearch(e.target.value);
+//           setPage(1);
+//         }}
+//       />
+
+//       {/* TABLE */}
+//       {loadingList ? (
+//         <div className="text-center py-4">
+//           <Spinner animation="border" />
+//         </div>
+//       ) : (
+//         <Table bordered hover responsive>
+//           <thead>
+//             <tr>
+//               <th>#</th>
+//               <th>Logo</th>
+//               <th>Banner</th>
+//               <th>Title</th>
+//               <th>Template</th>
+//               <th>Transition</th>
+//               <th>Status</th>
+//               <th>Render</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {festivals.length ? (
+//               festivals.map((f, i) => {
+                
+//                 // ⭐ Universal Banner Extractor
+//                 const bannerURL =
+//                   f.banner?.url ||
+//                   f.banner ||
+//                   f.bannerImage ||
+//                   f.bannerUrl ||
+//                   f.banner_path ||
+//                   f.bannerImg ||
+//                   "";
+
+//                 return (
+//                   <tr key={f._id}>
+//                     <td>{(page - 1) * limit + i + 1}</td>
+
+//                     {/* LOGO */}
+//                     <td>
+//                       {f.logo ? (
+//                         <Image
+//                           src={f.logo}
+//                           width="60"
+//                           height="60"
+//                           rounded
+//                           style={{
+//                             objectFit: "cover",
+//                             transform: `scale(${f.zoom}) translate(${f.offsetX}px, ${f.offsetY}px)`
+//                           }}
+//                         />
+//                       ) : "No Logo"}
+//                     </td>
+
+//                     {/* BANNER */}
+//                     <td>
+//                       {bannerURL ? (
+//                         <img
+//                           src={bannerURL}
+//                           alt="banner"
+//                           style={{
+//                             width: "120px",
+//                             height: "60px",
+//                             objectFit: "cover",
+//                             borderRadius: "6px",
+//                             border: "1px solid #ddd"
+//                           }}
+//                         />
+//                       ) : (
+//                         "No Banner"
+//                       )}
+//                     </td>
+
+//                     <td>{f.title}</td>
+//                     <td>{f.template}</td>
+//                     <td>{f.transition}</td>
+//                     <td>{f.status}</td>
+
+//                     <td>
+//                       <Button size="sm" onClick={() => renderVideo(f._id)}>
+//                         Render
+//                       </Button>
+//                     </td>
+
+//                     <td>
+//                       <Button size="sm" variant="warning" onClick={() => handleEdit(f)}>
+//                         <FaEdit />
+//                       </Button>{" "}
+//                       <Button size="sm" variant="danger" onClick={() => handleDelete(f._id)}>
+//                         <FaTrash />
+//                       </Button>
+//                     </td>
+//                   </tr>
+//                 );
+//               })
+//             ) : (
+//               <tr>
+//                 <td colSpan="9" className="text-center">
+//                   No data found
+//                 </td>
+//               </tr>
+//             )}
+//           </tbody>
+//         </Table>
+//       )}
+
+//       {/* PAGINATION */}
+//       <div className="d-flex justify-content-center gap-2 my-3">
+//         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
+
+//         <div className="px-3 py-1 border rounded">
+//           Page {page} / {totalPages}
+//         </div>
+
+//         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+//       </div>
+
+//       {/* MODAL */}
+//       <Modal show={showModal} onHide={handleClose} centered size="lg">
+//         <Modal.Header closeButton>
+//           <Modal.Title>{editing ? "Edit Festival" : "Add Festival"}</Modal.Title>
+//         </Modal.Header>
+
+//         <Modal.Body>
+//           <Form onSubmit={handleSubmit}>
+//             <div className="row">
+
+//               {/* LEFT FORM */}
+//               <div className="col-md-6">
+
+//                 <Form.Group className="mb-2">
+//                   <Form.Label>Title</Form.Label>
+//                   <Form.Control
+//                     name="title"
+//                     value={formData.title}
+//                     onChange={handleChange}
+//                   />
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-2">
+//                   <Form.Label>Template</Form.Label>
+//                   <Form.Control
+//                     name="template"
+//                     value={formData.template}
+//                     onChange={handleChange}
+//                   />
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-2">
+//                   <Form.Label>Transition</Form.Label>
+//                   <Form.Select
+//                     name="transition"
+//                     value={formData.transition}
+//                     onChange={handleChange}
+//                   >
+//                     <option value="">Select Transition</option>
+//                     {transitions.map((t, id) => (
+//                       <option key={id} value={t}>{t}</option>
+//                     ))}
+//                   </Form.Select>
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-2">
+//                   <Form.Label>Status</Form.Label>
+//                   <Form.Select
+//                     name="status"
+//                     value={formData.status}
+//                     onChange={handleChange}
+//                   >
+//                     <option value="active">Active</option>
+//                     <option value="inactive">Inactive</option>
+//                   </Form.Select>
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-3">
+//                   <Form.Label>Logo Image</Form.Label>
+//                   <Form.Control type="file" name="logo" accept="image/*" onChange={handleChange} />
+//                 </Form.Group>
+
+//                 <Form.Group className="mb-3">
+//                   <Form.Label>Banner Image</Form.Label>
+//                   <Form.Control type="file" name="banner" accept="image/*" onChange={handleChange} />
+//                 </Form.Group>
+
+//               </div>
+
+//               {/* RIGHT FORM (CONTROLS) */}
+//               <div className="col-md-6">
+
+//                 {/* Logo Controls */}
+//                 <div className="p-2 border rounded mb-3">
+//                   <h6 className="text-center">Logo Adjustment</h6>
+
+//                   <label>Zoom</label>
+//                   <input type="range" min="0.5" max="2" step="0.01"
+//                     value={formData.zoom}
+//                     onChange={(e) => setFormData((p) => ({ ...p, zoom: parseFloat(e.target.value) }))} />
+
+//                   <label>Move Left / Right</label>
+//                   <input type="range" min="-100" max="100"
+//                     value={formData.x}
+//                     onChange={(e) => setFormData((p) => ({ ...p, x: parseInt(e.target.value) }))} />
+
+//                   <label>Move Up / Down</label>
+//                   <input type="range" min="-100" max="100"
+//                     value={formData.y}
+//                     onChange={(e) => setFormData((p) => ({ ...p, y: parseInt(e.target.value) }))} />
+//                 </div>
+
+//                 {/* Banner Controls */}
+//                 <div className="p-2 border rounded mb-3">
+//                   <h6 className="text-center">Banner Adjustment</h6>
+
+//                   <label>Zoom</label>
+//                   <input type="range" min="0.5" max="2" step="0.01"
+//                     value={formData.bannerZoom}
+//                     onChange={(e) => setFormData((p) => ({ ...p, bannerZoom: parseFloat(e.target.value) }))} />
+
+//                   <label>Move Left / Right</label>
+//                   <input type="range" min="-200" max="200"
+//                     value={formData.bannerX}
+//                     onChange={(e) => setFormData((p) => ({ ...p, bannerX: parseInt(e.target.value) }))} />
+
+//                   <label>Move Up / Down</label>
+//                   <input type="range" min="-200" max="200"
+//                     value={formData.bannerY}
+//                     onChange={(e) => setFormData((p) => ({ ...p, bannerY: parseInt(e.target.value) }))} />
+//                 </div>
+
+//               </div>
+//             </div>
+
+//             {/* PREVIEW */}
+//             <div
+//               style={{
+//                 width: 300,
+//                 height: 300,
+//                 margin: "20px auto",
+//                 border: "1px dashed #999",
+//                 position: "relative",
+//                 overflow: "hidden",
+//                 borderRadius: "12px"
+//               }}
+//             >
+//               {/* Banner Preview */}
+//               {formData.bannerPreview && (
+//                 <img
+//                   src={formData.bannerPreview}
+//                   alt="banner"
+//                   style={{
+//                     width: "100%",
+//                     height: "100%",
+//                     objectFit: "cover",
+//                     position: "absolute",
+//                     transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
+//                   }}
+//                 />
+//               )}
+
+//               {/* Logo Preview */}
+//               {formData.preview && (
+//                 <div
+//                   style={{
+//                     width: 120,
+//                     height: 120,
+//                     position: "absolute",
+//                     top: "50%",
+//                     left: "50%",
+//                     transform: "translate(-50%, -50%)",
+//                     borderRadius: "50%",
+//                     overflow: "hidden",
+//                     border: "4px solid white",
+//                     background: "white"
+//                   }}
+//                 >
+//                   <img
+//                     src={formData.preview}
+//                     alt="logo"
+//                     style={{
+//                       width: "100%",
+//                       height: "100%",
+//                       objectFit: "contain",
+//                       transform: `scale(${formData.zoom}) translate(${formData.x}px, ${formData.y}px)`
+//                     }}
+//                   />
+//                 </div>
+//               )}
+//             </div>
+
+//             <Button type="submit" className="w-100" disabled={saving}>
+//               {saving ? "Saving..." : editing ? "Update" : "Save"}
+//             </Button>
+
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default FestivalManager;
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Modal, Form, Table, Image, Spinner } from "react-bootstrap";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
-const API_URL = process.env.REACT_APP_API_URL || "https://crafto-backend-zqcn.onrender.com/api/festivals";
-const RENDER_API = process.env.REACT_APP_RENDER_API || "https://crafto-backend-zqcn.onrender.com/api/render";
+const API_URL =
+  process.env.REACT_APP_API_URL || "https://crafto-backend-zqcn.onrender.com/api/festivals";
+
+
 
 const FestivalManager = () => {
   const [festivals, setFestivals] = useState([]);
@@ -1353,46 +1893,86 @@ const FestivalManager = () => {
   const [loadingList, setLoadingList] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [transitions, setTransitions] = useState([]);
+  /* ================= FORM DATA ================= */
+  // const [formData, setFormData] = useState({
+  //   title: "",
+  //   template: "",
+  //   transition: "",
+  //   status: "active",
+  //    startDate: "",   // ✅ ADD
+  // endDate: "", 
 
-  // ⭐ FULL CRAFTO STYLE DATA
+  //   logo: null,
+  //   logoType: "",
+  //   preview: "",
+
+  //   zoom: 1,
+  //   x: 0,
+  //   y: 0,
+    
+
+  //    profileSize: 120,
+  // profileShape: "circle",
+  // animationName: "fade",
+
+  //   banner: null,
+  //   bannerPreview: "",
+  //   bannerZoom: 1,
+  //   bannerX: 0,
+  //   bannerY: 0,
+  // });
+
   const [formData, setFormData] = useState({
-    title: "",
-    template: "",
-    transition: "",
-    status: "active",
+  /* ================= BASIC ================= */
+  title: "",
+  template: "",
+  status: "active",
 
-    // Logo
-    logo: null,
-    preview: "",
-    zoom: 1,
-    x: 0,
-    y: 0,
+  /* ================= TIMELINE ================= */
+  startDate: "",   // maps to startAt
+  endDate: "",     // maps to expireAt
 
-    // Banner
-    banner: null,
-    bannerPreview: "",
-    bannerZoom: 1,
-    bannerX: 0,
-    bannerY: 0
-  });
+  /* ================= LOGO ================= */
+  logo: null,
+  logoType: "",     // image | video
+  preview: "",
 
-  // Load Transitions
-  const fetchTransitions = async () => {
-    try {
-      const res = await axios.get("https://crafto-backend-zqcn.onrender.com/api/transitions");
-      setTransitions(res.data.transitions || []);
-    } catch (err) {
-      console.error("Failed to load transitions", err);
-    }
-  };
+  zoom: 1,
+  x: 0,
+  y: 0,
 
-  // Fetch Festival List
+  /* ================= PROFILE SETTINGS ================= */
+  profileSize: 120,
+  profileShape: "circle",
+
+  /* ================= PROFILE ANIMATION ================= */
+  animationName: "fade",
+  animationDuration: 0.8,   // seconds
+  animationDelay: 0,
+  animationEasing: "ease-in-out",
+
+  /* ================= TRANSITION ================= */
+  transitionType: "fade",
+  transitionDuration: 0.8,
+  transitionDelay: 0,
+  transitionEasing: "ease-in-out",
+
+  /* ================= BANNER ================= */
+  banner: null,
+  bannerPreview: "",
+  bannerZoom: 1,
+  bannerX: 0,
+  bannerY: 0,
+});
+
+
+  /* ================= FETCH FESTIVALS ================= */
   const fetchData = async () => {
     try {
       setLoadingList(true);
-      const res = await axios.get(API_URL, { params: { search, page, limit } });
-
+      const res = await axios.get(API_URL, {
+        params: { search, page, limit },
+      });
       setFestivals(res.data.festivals || []);
       setTotalPages(res.data.pages || 1);
     } catch (err) {
@@ -1405,157 +1985,339 @@ const FestivalManager = () => {
 
   useEffect(() => {
     fetchData();
-    fetchTransitions();
   }, [page, search]);
 
-  // Handle Input Change
+  /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, files, value } = e.target;
 
     if (files && files.length) {
       const file = files[0];
 
+      if (name === "logo") {
+        setFormData((p) => ({
+          ...p,
+          logo: file,
+          preview: URL.createObjectURL(file),
+          logoType: file.type.startsWith("video") ? "video" : "image",
+        }));
+        return;
+      }
+
       if (name === "banner") {
-        return setFormData((prev) => ({
-          ...prev,
+        setFormData((p) => ({
+          ...p,
           banner: file,
           bannerPreview: URL.createObjectURL(file),
         }));
+        return;
       }
-
-      return setFormData((prev) => ({
-        ...prev,
-        logo: file,
-        preview: URL.createObjectURL(file),
-      }));
     }
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  // Submit Form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setSaving(true);
+  /* ================= SUBMIT ================= */
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       setSaving(true);
 
-      const data = new FormData();
-      data.append("title", formData.title);
-      data.append("template", formData.template);
-      data.append("transition", formData.transition);
-      data.append("status", formData.status);
+//       const data = new FormData();
+//       data.append("title", formData.title);
+//       data.append("template", formData.template);
+//       data.append("transition", formData.transition);
+//       data.append("status", formData.status);
+//      data.append("startAt", formData.startDate);
+// data.append("expireAt", formData.endDate);
 
-      data.append("zoom", formData.zoom);
-      data.append("offsetX", formData.x);
-      data.append("offsetY", formData.y);
+//       data.append("zoom", formData.zoom);
+//       data.append("offsetX", formData.x);
+//       data.append("offsetY", formData.y);
 
-      data.append("bannerZoom", formData.bannerZoom);
-      data.append("bannerX", formData.bannerX);
-      data.append("bannerY", formData.bannerY);
+//       data.append("bannerZoom", formData.bannerZoom);
+//       data.append("bannerX", formData.bannerX);
+//       data.append("bannerY", formData.bannerY);
 
-      if (formData.logo) data.append("logo", formData.logo, formData.logo.name);
-      if (formData.banner) data.append("banner", formData.banner, formData.banner.name);
+//       data.append("profileSize", formData.profileSize);
+// data.append("profileShape", formData.profileShape);
+// data.append("animationName", formData.animationName);
 
-      if (editing) await axios.put(`${API_URL}/${editing._id}`, data);
-      else await axios.post(API_URL, data);
+//       if (formData.logo) data.append("logo", formData.logo);
+//       if (formData.banner) data.append("banner", formData.banner);
 
-      handleClose();
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      alert("Save failed");
-    } finally {
-      setSaving(false);
+   
+
+//       const config = {
+//   headers: {
+//     "Content-Type": "multipart/form-data",
+//   },
+// };
+
+// if (editing) {
+//   await axios.put(
+//     `${API_URL}/${editing._id}`,
+//     data,
+//     config
+//   );
+// } else {
+//   await axios.post(
+//     API_URL,
+//     data,
+//     config
+//   );
+// }
+
+
+//       handleClose();
+//       fetchData();
+//     } catch (err) {
+//       console.error(err);
+//       alert("Save failed");
+//     } finally {
+//       setSaving(false);
+//     }
+//   };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setSaving(true);
+
+    const data = new FormData();
+
+    /* ================= BASIC ================= */
+    data.append("title", formData.title);
+    data.append("template", formData.template);
+    data.append("status", formData.status);
+
+    /* ================= TIMELINE ================= */
+    data.append("startAt", formData.startDate);
+    data.append("expireAt", formData.endDate);
+
+    /* ================= LOGO TRANSFORM ================= */
+    data.append("zoom", formData.zoom);
+    data.append("offsetX", formData.x);
+    data.append("offsetY", formData.y);
+
+    /* ================= PROFILE ================= */
+    data.append("profileSize", formData.profileSize);
+    data.append("profileShape", formData.profileShape);
+
+    /* ================= PROFILE ANIMATION ================= */
+    data.append("animationName", formData.animationName);
+    data.append("animationDuration", formData.animationDuration * 1000); // sec → ms
+    data.append("animationDelay", formData.animationDelay * 1000);
+    data.append("animationEasing", formData.animationEasing);
+
+    /* ================= BANNER ================= */
+    data.append("bannerZoom", formData.bannerZoom);
+    data.append("bannerX", formData.bannerX);
+    data.append("bannerY", formData.bannerY);
+
+    /* ================= FILES ================= */
+    if (formData.logo) data.append("logo", formData.logo);
+    if (formData.banner) data.append("banner", formData.banner);
+
+    const config = {
+      headers: { "Content-Type": "multipart/form-data" },
+    };
+
+    if (editing) {
+      await axios.put(`${API_URL}/${editing._id}`, data, config);
+    } else {
+      await axios.post(API_URL, data, config);
     }
-  };
 
-  // Edit Handler
-  const handleEdit = (item) => {
-    setEditing(item);
+    handleClose();
+    fetchData();
+  } catch (err) {
+    console.error(err);
+    alert("Save failed");
+  } finally {
+    setSaving(false);
+  }
+};
 
-    setFormData({
-      title: item.title || "",
-      template: item.template || "",
-      transition: item.transition || "",
-      status: item.status || "active",
+  /* ================= EDIT ================= */
+//   const handleEdit = (item) => {
+//     setEditing(item);
+//     setFormData({
+//       title: item.title || "",
+//       template: item.template || "",
+//       transition: item.transition || "",
+//       status: item.status || "active",
 
-      logo: null,
-      preview: item.logo || "",
-      zoom: item.zoom || 1,
-      x: item.offsetX || 0,
-      y: item.offsetY || 0,
 
-      banner: null,
-      bannerPreview: item.banner?.url || item.banner || "",
-      bannerZoom: item.bannerZoom || 1,
-      bannerX: item.bannerX || 0,
-      bannerY: item.bannerY || 0
-    });
+// startDate: item.startDate ? item.startDate.slice(0,10) : "",
+// endDate: item.endDate ? item.endDate.slice(0,10) : "",
+//       logo: null,
+//       preview: item.logo || "",
+//       logoType: item.logo?.includes(".mp4") ? "video" : "image",
 
-    setShowModal(true);
-  };
+//       zoom: item.zoom || 1,
+//       x: item.offsetX || 0,
+//       y: item.offsetY || 0,
 
-  // Delete
+//         profileSize: item.profile?.size || 120,
+//   profileShape: item.profile?.shape || "circle",
+//   animationName: item.profileAnimation?.name || "fade",
+
+//       banner: null,
+//       bannerPreview: item.banner || "",
+//       bannerZoom: item.bannerZoom || 1,
+//       bannerX: item.bannerX || 0,
+//       bannerY: item.bannerY || 0,
+//     });
+//     setShowModal(true);
+//   };
+
+const handleEdit = (item) => {
+  setEditing(item);
+
+  setFormData({
+    /* ================= BASIC ================= */
+    title: item.title || "",
+    template: item.template || "",
+    status: item.status || "active",
+
+    /* ================= TIMELINE ================= */
+    startDate: item.startAt ? item.startAt.slice(0, 10) : "",
+    endDate: item.expireAt ? item.expireAt.slice(0, 10) : "",
+
+    /* ================= LOGO ================= */
+    logo: null,
+    preview: item.logo || "",
+    logoType: item.logoType || "image",
+
+    zoom: item.zoom || 1,
+    x: item.offsetX || 0,
+    y: item.offsetY || 0,
+
+    /* ================= PROFILE ================= */
+    profileSize: item.profile?.size || 120,
+    profileShape: item.profile?.shape || "circle",
+
+    /* ================= PROFILE ANIMATION ================= */
+    animationName: item.profileAnimation?.name || "fade",
+    animationDuration:
+      item.profileAnimation?.duration
+        ? item.profileAnimation.duration / 1000
+        : 0.8, // ms → sec
+    animationDelay:
+      item.profileAnimation?.delay
+        ? item.profileAnimation.delay / 1000
+        : 0,
+    animationEasing:
+      item.profileAnimation?.easing || "ease-in-out",
+
+    /* ================= BANNER ================= */
+    banner: null,
+    bannerPreview: item.banner || "",
+    bannerZoom: item.bannerZoom || 1,
+    bannerX: item.bannerX || 0,
+    bannerY: item.bannerY || 0,
+  });
+
+  setShowModal(true);
+};
+
+  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this festival?")) return;
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      alert("Delete failed");
-    }
+    await axios.delete(`${API_URL}/${id}`);
+    fetchData();
   };
 
-  // Reset Form
-  const handleClose = () => {
-    setEditing(null);
-    setFormData({
-      title: "",
-      template: "",
-      transition: "",
-      status: "active",
-      logo: null,
-      preview: "",
-      zoom: 1,
-      x: 0,
-      y: 0,
+// const handleClose = () => {
+//   setEditing(null);
+//   setShowModal(false);
+//   setFormData({
+//     title: "",
+//     template: "",
+//     transition: "",
+//     status: "active",
+//     startDate: "",
+//     endDate: "",
 
-      banner: null,
-      bannerPreview: "",
-      bannerZoom: 1,
-      bannerX: 0,
-      bannerY: 0
-    });
-    setShowModal(false);
-  };
+//     logo: null,
+//     logoType: "",
+//     preview: "",
 
-  // Render Video
-  const renderVideo = async (id) => {
-    try {
-      const res = await axios.post(RENDER_API, { id });
-      if (!res.data.videoUrl) return alert("No URL returned");
-      window.open(res.data.videoUrl, "_blank");
-    } catch (err) {
-      console.error(err);
-      alert("Render failed");
-    }
-  };
+//     zoom: 1,
+//     x: 0,
+//     y: 0,
+
+//     profileSize: 120,
+//     profileShape: "circle",
+//     animationName: "fade",
+
+//     banner: null,
+//     bannerPreview: "",
+//     bannerZoom: 1,
+//     bannerX: 0,
+//     bannerY: 0,
+//   });
+// };
+
+const handleClose = () => {
+  setEditing(null);
+  setShowModal(false);
+
+  setFormData({
+    /* ================= BASIC ================= */
+    title: "",
+    template: "",
+    status: "active",
+
+    /* ================= TIMELINE ================= */
+    startDate: "",
+    endDate: "",
+
+    /* ================= LOGO ================= */
+    logo: null,
+    logoType: "",
+    preview: "",
+
+    zoom: 1,
+    x: 0,
+    y: 0,
+
+    /* ================= PROFILE ================= */
+    profileSize: 120,
+    profileShape: "circle",
+
+    /* ================= PROFILE ANIMATION ================= */
+    animationName: "fade",
+    animationDuration: 0.8,
+    animationDelay: 0,
+    animationEasing: "ease-in-out",
+
+    /* ================= BANNER ================= */
+    banner: null,
+    bannerPreview: "",
+    bannerZoom: 1,
+    bannerX: 0,
+    bannerY: 0,
+  });
+};
+
+
+
+ 
 
   return (
     <div>
-      
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between mb-3">
         <h4>Festival Templates</h4>
         <Button onClick={() => setShowModal(true)}>
           <FaPlus /> Add Festival
         </Button>
       </div>
 
-      {/* SEARCH */}
       <input
-        type="text"
         className="form-control mb-3"
         placeholder="Search festival..."
         value={search}
@@ -1565,11 +2327,8 @@ const FestivalManager = () => {
         }}
       />
 
-      {/* TABLE */}
       {loadingList ? (
-        <div className="text-center py-4">
-          <Spinner animation="border" />
-        </div>
+        <Spinner />
       ) : (
         <Table bordered hover responsive>
           <thead>
@@ -1578,240 +2337,341 @@ const FestivalManager = () => {
               <th>Logo</th>
               <th>Banner</th>
               <th>Title</th>
-              <th>Template</th>
-              <th>Transition</th>
               <th>Status</th>
-              <th>Render</th>
+              
+<th>Start</th>
+<th>End</th>
+              {/* <th>Render</th> */}
+              
               <th>Actions</th>
             </tr>
           </thead>
-
           <tbody>
-            {festivals.length ? (
-              festivals.map((f, i) => {
+            {festivals.map((f, i) => (
+              <tr key={f._id}>
+                <td>{(page - 1) * limit + i + 1}</td>
+                <td>
+                  {f.logo &&
+                    (f.logo.includes(".mp4") ? (
+                      <video src={f.logo} width="60" autoPlay loop muted />
+                    ) : (
+                      <Image src={f.logo} width="60" />
+                    ))}
+                </td>
+                <td>{f.banner && <img src={f.banner} width="100" alt="" />}</td>
+                <td>{f.title}</td>
+                <td>
+  <span
+    className={`badge ${
+      f.status === "active"
+        ? "bg-success"
+        : f.status === "expired"
+        ? "bg-danger"
+        : "bg-secondary"
+    }`}
+  >
+    {f.status}
+  </span>
+</td>
+
+<td>
+  {f.startAt ? new Date(f.startAt).toISOString().slice(0,10) : "-"}
+</td>
+
+<td>
+  {f.expireAt ? new Date(f.expireAt).toISOString().slice(0,10) : "-"}
+</td>
+
+
                 
-                // ⭐ Universal Banner Extractor
-                const bannerURL =
-                  f.banner?.url ||
-                  f.banner ||
-                  f.bannerImage ||
-                  f.bannerUrl ||
-                  f.banner_path ||
-                  f.bannerImg ||
-                  "";
+                {/* <td>
+                  <Button size="sm" onClick={() => renderVideo(f._id)}>
+                    Render
+                  </Button>
+                </td> */}
+                <td>
+                  {/* <Button size="sm" onClick={() => handleEdit(f)}>
+                    <FaEdit />
+                  </Button>{" "} */}
+                  <Button
+  size="sm"
+  disabled={f.status === "expired"}
+  onClick={() => handleEdit(f)}
+>
+  <FaEdit />
+</Button>
 
-                return (
-                  <tr key={f._id}>
-                    <td>{(page - 1) * limit + i + 1}</td>
-
-                    {/* LOGO */}
-                    <td>
-                      {f.logo ? (
-                        <Image
-                          src={f.logo}
-                          width="60"
-                          height="60"
-                          rounded
-                          style={{
-                            objectFit: "cover",
-                            transform: `scale(${f.zoom}) translate(${f.offsetX}px, ${f.offsetY}px)`
-                          }}
-                        />
-                      ) : "No Logo"}
-                    </td>
-
-                    {/* BANNER */}
-                    <td>
-                      {bannerURL ? (
-                        <img
-                          src={bannerURL}
-                          alt="banner"
-                          style={{
-                            width: "120px",
-                            height: "60px",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            border: "1px solid #ddd"
-                          }}
-                        />
-                      ) : (
-                        "No Banner"
-                      )}
-                    </td>
-
-                    <td>{f.title}</td>
-                    <td>{f.template}</td>
-                    <td>{f.transition}</td>
-                    <td>{f.status}</td>
-
-                    <td>
-                      <Button size="sm" onClick={() => renderVideo(f._id)}>
-                        Render
-                      </Button>
-                    </td>
-
-                    <td>
-                      <Button size="sm" variant="warning" onClick={() => handleEdit(f)}>
-                        <FaEdit />
-                      </Button>{" "}
-                      <Button size="sm" variant="danger" onClick={() => handleDelete(f._id)}>
-                        <FaTrash />
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="9" className="text-center">
-                  No data found
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(f._id)}>
+                    <FaTrash />
+                  </Button>
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </Table>
       )}
 
-      {/* PAGINATION */}
-      <div className="d-flex justify-content-center gap-2 my-3">
-        <Button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
-
-        <div className="px-3 py-1 border rounded">
-          Page {page} / {totalPages}
-        </div>
-
-        <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
-      </div>
-
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       <Modal show={showModal} onHide={handleClose} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{editing ? "Edit Festival" : "Add Festival"}</Modal.Title>
+          <Modal.Title>{editing ? "Edit" : "Add"} Festival</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        {/* <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <div className="row">
+            <Form.Control className="mb-2" name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+            <Form.Control className="mb-2" name="template" placeholder="Template" value={formData.template} onChange={handleChange} />
 
-              {/* LEFT FORM */}
-              <div className="col-md-6">
+            <Form.Control className="mb-2" type="file" name="logo" accept="image/*,video/*" onChange={handleChange} />
+            <Form.Control className="mb-2" type="file" name="banner" accept="image/*" onChange={handleChange} />
+            <Form.Control
+  className="mb-2"
+  type="date"
+  name="startDate"
+  value={formData.startDate}
+  onChange={handleChange}
+  required
+/>
+<hr />
+<h6>Profile Animation</h6>
 
-                <Form.Group className="mb-2">
-                  <Form.Label>Title</Form.Label>
-                  <Form.Control
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
+<Form.Label>Animation Type</Form.Label>
+<Form.Select
+  name="animationName"
+  value={formData.animationName}
+  onChange={handleChange}
+>
+  <option value="fade">Fade</option>
+  <option value="zoom">Zoom</option>
+  <option value="slide">Slide</option>
+  <option value="bounce">Bounce</option>
+</Form.Select>
 
-                <Form.Group className="mb-2">
-                  <Form.Label>Template</Form.Label>
-                  <Form.Control
-                    name="template"
-                    value={formData.template}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
+<Form.Label className="mt-2">Animation Duration (sec)</Form.Label>
+<Form.Control
+  type="number"
+  step="0.1"
+  name="animationDuration"
+  value={formData.animationDuration}
+  onChange={handleChange}
+/>
 
-                <Form.Group className="mb-2">
-                  <Form.Label>Transition</Form.Label>
-                  <Form.Select
-                    name="transition"
-                    value={formData.transition}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Transition</option>
-                    {transitions.map((t, id) => (
-                      <option key={id} value={t}>{t}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
+<Form.Label className="mt-2">Animation Delay (sec)</Form.Label>
+<Form.Control
+  type="number"
+  step="0.1"
+  name="animationDelay"
+  value={formData.animationDelay}
+  onChange={handleChange}
+/>
 
-                <Form.Group className="mb-2">
-                  <Form.Label>Status</Form.Label>
-                  <Form.Select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </Form.Select>
-                </Form.Group>
+<Form.Label className="mt-2">Animation Easing</Form.Label>
+<Form.Select
+  name="animationEasing"
+  value={formData.animationEasing}
+  onChange={handleChange}
+>
+  <option value="ease-in-out">Ease In Out</option>
+  <option value="ease-in">Ease In</option>
+  <option value="ease-out">Ease Out</option>
+  <option value="linear">Linear</option>
+</Form.Select>
+<hr />
+<h6>Screen Transition</h6>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Logo Image</Form.Label>
-                  <Form.Control type="file" name="logo" accept="image/*" onChange={handleChange} />
-                </Form.Group>
+<Form.Label>Transition Type</Form.Label>
+<Form.Select
+  name="transitionType"
+  value={formData.transitionType}
+  onChange={handleChange}
+>
+  <option value="fade">Fade</option>
+  <option value="slide">Slide</option>
+  <option value="zoom">Zoom</option>
+</Form.Select>
 
-                <Form.Group className="mb-3">
-                  <Form.Label>Banner Image</Form.Label>
-                  <Form.Control type="file" name="banner" accept="image/*" onChange={handleChange} />
-                </Form.Group>
+<Form.Label className="mt-2">Transition Duration (sec)</Form.Label>
+<Form.Control
+  type="number"
+  step="0.1"
+  name="transitionDuration"
+  value={formData.transitionDuration}
+  onChange={handleChange}
+/>
 
-              </div>
+<Form.Label className="mt-2">Transition Delay (sec)</Form.Label>
+<Form.Control
+  type="number"
+  step="0.1"
+  name="transitionDelay"
+  value={formData.transitionDelay}
+  onChange={handleChange}
+/>
 
-              {/* RIGHT FORM (CONTROLS) */}
-              <div className="col-md-6">
 
-                {/* Logo Controls */}
-                <div className="p-2 border rounded mb-3">
-                  <h6 className="text-center">Logo Adjustment</h6>
+<Form.Control
+  className="mb-2"
+  type="date"
+  name="endDate"
+  value={formData.endDate}
+  onChange={handleChange}
+  required
+/> */}
 
-                  <label>Zoom</label>
-                  <input type="range" min="0.5" max="2" step="0.01"
-                    value={formData.zoom}
-                    onChange={(e) => setFormData((p) => ({ ...p, zoom: parseFloat(e.target.value) }))} />
+<Modal.Body>
+  <Form onSubmit={handleSubmit}>
 
-                  <label>Move Left / Right</label>
-                  <input type="range" min="-100" max="100"
-                    value={formData.x}
-                    onChange={(e) => setFormData((p) => ({ ...p, x: parseInt(e.target.value) }))} />
+    {/* ================= BASIC ================= */}
+    <Form.Control
+      className="mb-2"
+      name="title"
+      placeholder="Festival Title"
+      value={formData.title}
+      onChange={handleChange}
+      required
+    />
 
-                  <label>Move Up / Down</label>
-                  <input type="range" min="-100" max="100"
-                    value={formData.y}
-                    onChange={(e) => setFormData((p) => ({ ...p, y: parseInt(e.target.value) }))} />
-                </div>
+    <Form.Control
+      className="mb-2"
+      name="template"
+      placeholder="Template Name"
+      value={formData.template}
+      onChange={handleChange}
+      required
+    />
 
-                {/* Banner Controls */}
-                <div className="p-2 border rounded mb-3">
-                  <h6 className="text-center">Banner Adjustment</h6>
+    {/* ================= FILES ================= */}
+    <Form.Control
+      className="mb-2"
+      type="file"
+      name="logo"
+      accept="image/*,video/*"
+      onChange={handleChange}
+    />
 
-                  <label>Zoom</label>
-                  <input type="range" min="0.5" max="2" step="0.01"
-                    value={formData.bannerZoom}
-                    onChange={(e) => setFormData((p) => ({ ...p, bannerZoom: parseFloat(e.target.value) }))} />
+    <Form.Control
+      className="mb-2"
+      type="file"
+      name="banner"
+      accept="image/*"
+      onChange={handleChange}
+    />
 
-                  <label>Move Left / Right</label>
-                  <input type="range" min="-200" max="200"
-                    value={formData.bannerX}
-                    onChange={(e) => setFormData((p) => ({ ...p, bannerX: parseInt(e.target.value) }))} />
+    {/* ================= TIMELINE ================= */}
+    <Form.Label>Start Date</Form.Label>
+    <Form.Control
+      className="mb-2"
+      type="date"
+      name="startDate"
+      value={formData.startDate}
+      onChange={handleChange}
+      required
+    />
 
-                  <label>Move Up / Down</label>
-                  <input type="range" min="-200" max="200"
-                    value={formData.bannerY}
-                    onChange={(e) => setFormData((p) => ({ ...p, bannerY: parseInt(e.target.value) }))} />
-                </div>
+    <Form.Label>End Date</Form.Label>
+    <Form.Control
+      className="mb-3"
+      type="date"
+      name="endDate"
+      value={formData.endDate}
+      onChange={handleChange}
+      required
+    />
 
-              </div>
-            </div>
+    <hr />
 
-            {/* PREVIEW */}
-            <div
-              style={{
-                width: 300,
-                height: 300,
-                margin: "20px auto",
-                border: "1px dashed #999",
-                position: "relative",
-                overflow: "hidden",
-                borderRadius: "12px"
-              }}
-            >
-              {/* Banner Preview */}
-              {formData.bannerPreview && (
+    {/* ================= PROFILE ANIMATION ================= */}
+    <h6>Profile Animation</h6>
+
+    <Form.Label>Animation Type</Form.Label>
+    <Form.Select
+      name="animationName"
+      value={formData.animationName}
+      onChange={handleChange}
+    >
+      <option value="fade">Fade</option>
+      <option value="zoom">Zoom</option>
+      <option value="slide">Slide</option>
+      <option value="bounce">Bounce</option>
+    </Form.Select>
+
+    <Form.Label className="mt-2">Duration (seconds)</Form.Label>
+    <Form.Control
+      type="number"
+      step="0.1"
+      name="animationDuration"
+      value={formData.animationDuration}
+      onChange={handleChange}
+    />
+
+    <Form.Label className="mt-2">Delay (seconds)</Form.Label>
+    <Form.Control
+      type="number"
+      step="0.1"
+      name="animationDelay"
+      value={formData.animationDelay}
+      onChange={handleChange}
+    />
+
+    <Form.Label className="mt-2">Easing</Form.Label>
+    <Form.Select
+      name="animationEasing"
+      value={formData.animationEasing}
+      onChange={handleChange}
+    >
+      <option value="ease-in-out">Ease In Out</option>
+      <option value="ease-in">Ease In</option>
+      <option value="ease-out">Ease Out</option>
+      <option value="linear">Linear</option>
+    </Form.Select>
+
+    <hr />
+
+    {/* ================= SCREEN TRANSITION ================= */}
+    <h6>Screen Transition</h6>
+
+    <Form.Label>Transition Type</Form.Label>
+    <Form.Select
+      name="transitionType"
+      value={formData.transitionType}
+      onChange={handleChange}
+    >
+      <option value="fade">Fade</option>
+      <option value="slide">Slide</option>
+      <option value="zoom">Zoom</option>
+    </Form.Select>
+
+    <Form.Label className="mt-2">Duration (seconds)</Form.Label>
+    <Form.Control
+      type="number"
+      step="0.1"
+      name="transitionDuration"
+      value={formData.transitionDuration}
+      onChange={handleChange}
+    />
+
+    <Form.Label className="mt-3">Delay (seconds)</Form.Label>
+    <Form.Control
+      type="number"
+      step="0.1"
+      name="transitionDelay"
+      value={formData.transitionDelay}
+      onChange={handleChange}
+    />
+
+  
+
+            {/* ===== BANNER PREVIEW ===== */}
+            {formData.bannerPreview && (
+              <div
+                style={{
+                  width: "100%",
+                  height: 150,
+                  marginBottom: 10,
+                  overflow: "hidden",
+                  border: "1px dashed #ccc",
+                }}
+              >
                 <img
                   src={formData.bannerPreview}
                   alt="banner"
@@ -1819,46 +2679,191 @@ const FestivalManager = () => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    position: "absolute",
-                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
+                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
                   }}
                 />
-              )}
+              </div>
+            )}
 
-              {/* Logo Preview */}
-              {formData.preview && (
-                <div
-                  style={{
-                    width: 120,
-                    height: 120,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    border: "4px solid white",
-                    background: "white"
-                  }}
-                >
-                  <img
-                    src={formData.preview}
-                    alt="logo"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      transform: `scale(${formData.zoom}) translate(${formData.x}px, ${formData.y}px)`
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            {/* ===== LOGO PREVIEW ===== */}
+            {/* {formData.preview &&
+              (formData.logoType === "video" ? (
+                <video src={formData.preview} width="200" controls />
+              ) : (
+                <img src={formData.preview} width="120" alt="logo" />
+              ))} */}
 
-            <Button type="submit" className="w-100" disabled={saving}>
-              {saving ? "Saving..." : editing ? "Update" : "Save"}
+              {/* {formData.preview && (
+  <div
+    className={formData.animationName}
+    style={{
+      width: formData.profileSize,
+      height: formData.profileSize,
+      borderRadius:
+        formData.profileShape === "circle"
+          ? "50%"
+          : formData.profileShape === "rounded"
+          ? "12px"
+          : "0px",
+      overflow: "hidden",
+      transform: `translate(${formData.x}px, ${formData.y}px) scale(${formData.zoom})`,
+      transition: "all 0.6s ease",
+      marginBottom: "10px",
+    }}
+  >
+    {formData.logoType === "video" ? (
+      <video
+        src={formData.preview}
+        width="100%"
+        height="100%"
+        autoPlay
+        loop
+        muted
+      />
+    ) : (
+      <img
+        src={formData.preview}
+        alt="logo"
+        width="100%"
+        height="100%"
+        style={{ objectFit: "cover" }}
+      />
+    )}
+  </div>
+)} */}
+
+{formData.preview && (
+  <div
+    key={
+      formData.animationName +
+      formData.profileSize +
+      formData.profileShape +
+      formData.zoom +
+      formData.x +
+      formData.y
+    }
+    style={{
+      width: "100%",
+      height: 240,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#f8f9fa",
+      border: "1px dashed #ccc",
+      borderRadius: 12,
+      marginBottom: 15,
+    }}
+  >
+    <div
+      className={formData.animationName}
+      style={{
+        width: formData.profileSize,
+        height: formData.profileSize,
+        borderRadius:
+          formData.profileShape === "circle"
+            ? "50%"
+            : formData.profileShape === "rounded"
+            ? "14px"
+            : "0px",
+        overflow: "hidden",
+        transform: `translate(${formData.x}px, ${formData.y}px) scale(${formData.zoom})`,
+        transition: "transform 0.3s ease",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+        background: "#fff",
+      }}
+    >
+      {formData.logoType === "video" ? (
+        <video
+          src={formData.preview}
+          autoPlay
+          loop
+          muted
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <img
+          src={formData.preview}
+          alt="logo"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      )}
+    </div>
+  </div>
+)}
+
+
+              <hr />
+
+<Form.Label>Profile Size</Form.Label>
+<Form.Range
+  min="60"
+  max="250"
+  value={formData.profileSize}
+  onChange={(e) =>
+    setFormData((p) => ({
+      ...p,
+      profileSize: Number(e.target.value),
+    }))
+  }
+/>
+
+<Form.Label>Profile Shape</Form.Label>
+<Form.Select
+  value={formData.profileShape}
+  onChange={(e) =>
+    setFormData((p) => ({ ...p, profileShape: e.target.value }))
+  }
+>
+  <option value="circle">Circle</option>
+  <option value="rounded">Rounded</option>
+  <option value="square">Square</option>
+</Form.Select>
+
+<Form.Label>Profile Animation</Form.Label>
+<Form.Select
+  value={formData.animationName}
+  onChange={(e) =>
+    setFormData((p) => ({ ...p, animationName: e.target.value }))
+  }
+>
+  <option value="fade">Fade</option>
+  <option value="zoom">Zoom</option>
+  <option value="slide">Slide</option>
+  <option value="bounce">Bounce</option>
+</Form.Select>
+
+
+            <hr />
+
+            <Form.Label>Logo Zoom</Form.Label>
+            <Form.Range min="0.3" max="3" step="0.1" value={formData.zoom}
+              onChange={(e) => setFormData((p) => ({ ...p, zoom: Number(e.target.value) }))} />
+
+            <Form.Label>Logo X</Form.Label>
+            <Form.Range min="-150" max="150" value={formData.x}
+              onChange={(e) => setFormData((p) => ({ ...p, x: Number(e.target.value) }))} />
+
+            <Form.Label>Logo Y</Form.Label>
+            <Form.Range min="-150" max="150" value={formData.y}
+              onChange={(e) => setFormData((p) => ({ ...p, y: Number(e.target.value) }))} />
+
+            <hr />
+
+            <Form.Label>Banner Zoom</Form.Label>
+            <Form.Range min="0.3" max="3" step="0.1" value={formData.bannerZoom}
+              onChange={(e) => setFormData((p) => ({ ...p, bannerZoom: Number(e.target.value) }))} />
+
+            <Form.Label>Banner X</Form.Label>
+            <Form.Range min="-300" max="300" value={formData.bannerX}
+              onChange={(e) => setFormData((p) => ({ ...p, bannerX: Number(e.target.value) }))} />
+
+            <Form.Label>Banner Y</Form.Label>
+            <Form.Range min="-300" max="300" value={formData.bannerY}
+              onChange={(e) => setFormData((p) => ({ ...p, bannerY: Number(e.target.value) }))} />
+
+            <Button type="submit" className="w-100 mt-3" disabled={saving}>
+              {saving ? "Saving..." : "Save"}
             </Button>
-
           </Form>
         </Modal.Body>
       </Modal>

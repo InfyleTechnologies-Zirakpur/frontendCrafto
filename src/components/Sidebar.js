@@ -175,7 +175,7 @@ import { Nav } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   FaTachometerAlt, FaVideo, FaLayerGroup, FaUsers, 
-  FaCreditCard, FaSignOutAlt, FaImages,FaBell
+  FaCreditCard, FaSignOutAlt, FaImages,FaBell,FaPenFancy
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -196,15 +196,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { path: '/categories', name: 'Categories', icon: <FaLayerGroup /> },
      { path: '/festival-templates', name: 'Festival Templates', icon: <FaImages /> },
      { path: '/politicians', name: 'Politicians', icon: <FaUsers /> },
+      { path: '/politician-posts/create', name: 'Politician Posts', icon: <FaPenFancy /> },
      { path: '/birthday-templates', name: 'Birthday Templates', icon: <FaImages /> },
      { path:'/anniversary-templates', name:'Anniversary Templates',icon:<FaImages/>},
     { path: '/users', name: 'Users', icon: <FaUsers /> },
+    { path: '/admin/notifications', name: 'Push Notifications', icon: <FaBell /> },
     { path: '/subscriptions', name: 'Subscriptions', icon: <FaLayerGroup /> },
     { path: '/admob', name: 'AdMob', icon: <FaCreditCard /> },
     { path: '/reports', name: 'Reports', icon: <FaImages /> },
     { path: '/road-banners', name: 'Road Banners', icon: <FaImages /> },
     { path: '/religious', name: 'Religious', icon: <FaCreditCard /> },
-     { path: '/notification', name: 'Push Notifications', icon: <FaBell /> },
+    //  { path: '/notification', name: 'Push Notifications', icon: <FaBell /> },
     { path: '/mycreations', name: 'My Creations', icon: <FaCreditCard /> },
     // { path: '/analyticspage', name: 'AnalyticsPage', icon: <FaImages /> },
     { path: '/language-manager', name: 'LanguageManager', icon: <FaImages /> }

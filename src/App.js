@@ -260,7 +260,8 @@ import BirthdayManager from './pages/BirthdayManager';
 import AnniversaryManager from './pages/AnniversaryManager';
 import Notification from './pages/Notification';
 import RoadBannerManager from "./pages/RoadBanners";
-
+import AdminNotifications from "./pages/AdminNotifications";
+import PoliticianPostForm from "./pages/PoliticianPostForm";
 
 
 
@@ -303,6 +304,8 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="subscriptions" element={<Subscriptions />} />
             <Route path="politicians" element={<Politician />} />
+            <Route path="politician-posts/create" element={<PoliticianPostForm />} />
+
             <Route path="admob" element={<AdMob />} />
             <Route path="religious" element={<Religious />} />
             <Route path="reports" element={<Reports />} />
@@ -312,7 +315,7 @@ function App() {
               <Route path="birthday-templates" element={<BirthdayManager/>}/>
               <Route path="anniversary-templates" element={<AnniversaryManager/>}/>
               <Route path="road-banners" element={<RoadBannerManager />} />
-
+                <Route path="/admin/notifications" element={<AdminNotifications />} />
               <Route path="mycreations" element={<Mycreation/>} />
               <Route path="notification" element={<Notification />} />
             <Route path="framemanager" element={<FrameManager />} /> {/* ✅ Added Frame Route */}

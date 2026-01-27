@@ -381,6 +381,706 @@
 // export default AnniversaryManager;
 
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// const API_URL = "https://crafto-backend-zqcn.onrender.com/api/anniversaries";
+
+// const AnniversaryManager = () => {
+//   const [anniversaries, setAnniversaries] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [editing, setEditing] = useState(null);
+
+//   const [search, setSearch] = useState("");
+//   const [page, setPage] = useState(1);
+//   const limit = 5;
+//   const [totalPages, setTotalPages] = useState(1);
+
+//   const [formData, setFormData] = useState({
+//     title: "",
+//     name: "",
+//     date: "",
+//     status: "active",
+
+//     photo: null,
+//     photoPreview: "",
+//     banner: null,
+//     bannerPreview: "",
+
+//     zoom: 1,
+//     offsetX: 0,
+//     offsetY: 0,
+
+//     bannerZoom: 1,
+//     bannerX: 0,
+//     bannerY: 0,
+//   });
+
+//   const fetchData = async () => {
+//     const res = await axios.get(API_URL, {
+//       params: { search, page, limit },
+//     });
+
+//     setAnniversaries(res.data.anniversaries);
+//     setTotalPages(res.data.pages);
+//   };
+
+//   useEffect(() => {
+//     fetchData();
+//   }, [page, search]);
+
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+
+//     if (name === "photo" && files?.length) {
+//       setFormData({
+//         ...formData,
+//         photo: files[0],
+//         photoPreview: URL.createObjectURL(files[0]),
+//       });
+//       return;
+//     }
+
+//     if (name === "banner" && files?.length) {
+//       setFormData({
+//         ...formData,
+//         banner: files[0],
+//         bannerPreview: URL.createObjectURL(files[0]),
+//       });
+//       return;
+//     }
+
+//     setFormData({ ...formData, [name]: value });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const data = new FormData();
+
+//     Object.keys(formData).forEach((key) => {
+//       if (key === "photo" || key === "banner") return;
+//       data.append(key, formData[key]);
+//     });
+
+//     if (formData.photo) data.append("photo", formData.photo);
+//     if (formData.banner) data.append("banner", formData.banner);
+
+//     if (editing) {
+//       await axios.put(`${API_URL}/${editing._id}`, data);
+//     } else {
+//       await axios.post(API_URL, data);
+//     }
+
+//     handleClose();
+//     fetchData();
+//   };
+
+//   const handleDelete = async (id) => {
+//     if (window.confirm("Delete this entry?")) {
+//       await axios.delete(`${API_URL}/${id}`);
+//       fetchData();
+//     }
+//   };
+
+//   const handleEdit = (item) => {
+//     setEditing(item);
+
+//     setFormData({
+//       title: item.title,
+//       name: item.name,
+//       date: item.date,
+//       status: item.status,
+
+//       photo: null,
+//       photoPreview: item.photo || "",
+//       banner: null,
+//       bannerPreview: item.banner || "",
+
+//       zoom: item.zoom || 1,
+//       offsetX: item.offsetX || 0,
+//       offsetY: item.offsetY || 0,
+
+//       bannerZoom: item.bannerZoom || 1,
+//       bannerX: item.bannerX || 0,
+//       bannerY: item.bannerY || 0,
+//     });
+
+//     setShowModal(true);
+//   };
+
+//   const handleClose = () => {
+//     setEditing(null);
+//     setShowModal(false);
+
+//     setFormData({
+//       title: "",
+//       name: "",
+//       date: "",
+//       status: "active",
+
+//       photo: null,
+//       photoPreview: "",
+//       banner: null,
+//       bannerPreview: "",
+
+//       zoom: 1,
+//       offsetX: 0,
+//       offsetY: 0,
+
+//       bannerZoom: 1,
+//       bannerX: 0,
+//       bannerY: 0,
+//     });
+//   };
+
+//   return (
+//     <div className="p-3 p-md-4">
+
+//       {/* HEADER */}
+//       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+//         <h4 className="m-0">Anniversary Manager</h4>
+
+//         <Button className="w-100 w-md-auto" onClick={() => setShowModal(true)}>
+//           <FaPlus /> Add Anniversary
+//         </Button>
+//       </div>
+
+//       {/* SEARCH */}
+//       <input
+//         type="text"
+//         className="form-control mb-3"
+//         placeholder="Search by name..."
+//         value={search}
+//         onChange={(e) => {
+//           setSearch(e.target.value);
+//           setPage(1);
+//         }}
+//       />
+
+//       {/* RESPONSIVE TABLE */}
+//       <div className="table-responsive">
+//         <Table bordered hover className="align-middle text-center">
+//           <thead>
+//             <tr>
+//               <th>#</th>
+//               <th>Banner</th>
+//               <th>Photo</th>
+//               <th>Name</th>
+//               <th>Title</th>
+//               <th>Date</th>
+//               <th>Status</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {anniversaries.map((a, i) => (
+//               <tr key={a._id}>
+//                 <td>{(page - 1) * limit + i + 1}</td>
+
+//                 <td>
+//                   {a.banner ? (
+//                     <Image
+//                       src={a.banner}
+//                       width="90"
+//                       height="50"
+//                       style={{ objectFit: "cover", borderRadius: "6px" }}
+//                     />
+//                   ) : "—"}
+//                 </td>
+
+//                 <td>
+//                   {a.photo ? (
+//                     <Image
+//                       src={a.photo}
+//                       width="60"
+//                       height="60"
+//                       roundedCircle
+//                       style={{ objectFit: "cover" }}
+//                     />
+//                   ) : "—"}
+//                 </td>
+
+//                 <td>{a.name}</td>
+//                 <td>{a.title}</td>
+//                 <td>{a.date}</td>
+//                 <td>{a.status}</td>
+
+//                 <td>
+//                   <div className="d-flex justify-content-center gap-2">
+//                     <Button size="sm" variant="warning" onClick={() => handleEdit(a)}>
+//                       <FaEdit />
+//                     </Button>
+
+//                     <Button size="sm" variant="danger" onClick={() => handleDelete(a._id)}>
+//                       <FaTrash />
+//                     </Button>
+//                   </div>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </Table>
+//       </div>
+
+//       {/* PAGINATION */}
+//       <div className="d-flex justify-content-center align-items-center gap-3 py-3">
+//         <Button size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
+//           Prev
+//         </Button>
+
+//         <span>
+//           Page {page} / {totalPages}
+//         </span>
+
+//         <Button size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+//           Next
+//         </Button>
+//       </div>
+
+//       {/* MODAL */}
+//       <Modal show={showModal} onHide={handleClose} centered size="lg">
+//         <Modal.Header closeButton>
+//           <Modal.Title>
+//             {editing ? "Edit Anniversary" : "Add Anniversary"}
+//           </Modal.Title>
+//         </Modal.Header>
+
+//         <Modal.Body>
+//           <Form onSubmit={handleSubmit}>
+
+//             {/* TEXT FIELDS */}
+//             <Form.Group className="mb-2">
+//               <Form.Label>Title</Form.Label>
+//               <Form.Control name="title" value={formData.title} onChange={handleChange} />
+//             </Form.Group>
+
+//             <Form.Group className="mb-2">
+//               <Form.Label>Name</Form.Label>
+//               <Form.Control name="name" value={formData.name} onChange={handleChange} />
+//             </Form.Group>
+
+//             <Form.Group className="mb-2">
+//               <Form.Label>Date</Form.Label>
+//               <Form.Control type="date" name="date" value={formData.date} onChange={handleChange} />
+//             </Form.Group>
+
+//             {/* FILE UPLOAD ROW */}
+//             <div className="row my-3">
+//               <div className="col-12 col-md-6">
+//                 <Form.Label>Photo Upload</Form.Label>
+//                 <Form.Control type="file" name="photo" onChange={handleChange} />
+//               </div>
+
+//               <div className="col-12 col-md-6 mt-3 mt-md-0">
+//                 <Form.Label>Banner Upload</Form.Label>
+//                 <Form.Control type="file" name="banner" onChange={handleChange} />
+//               </div>
+//             </div>
+
+//             {/* LIVE PREVIEW */}
+//             <div
+//               style={{
+//                 width: "100%",
+//                 maxWidth: 320,
+//                 height: 300,
+//                 margin: "20px auto",
+//                 position: "relative",
+//                 overflow: "hidden",
+//                 borderRadius: 12,
+//                 border: "1px dashed #999",
+//                 background: "#f2f2f2",
+//               }}
+//             >
+//               {/* Banner */}
+//               {formData.bannerPreview && (
+//                 <img
+//                   src={formData.bannerPreview}
+//                   alt="banner"
+//                   style={{
+//                     width: "100%",
+//                     height: "100%",
+//                     objectFit: "cover",
+//                     position: "absolute",
+//                     transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
+//                   }}
+//                 />
+//               )}
+
+//               {/* Photo */}
+//               {formData.photoPreview && (
+//                 <div
+//                   style={{
+//                     width: 140,
+//                     height: 140,
+//                     position: "absolute",
+//                     top: "50%",
+//                     left: "50%",
+//                     transform: "translate(-50%, -50%)",
+//                     borderRadius: "50%",
+//                     overflow: "hidden",
+//                     border: "4px solid white",
+//                   }}
+//                 >
+//                   <img
+//                     src={formData.photoPreview}
+//                     alt="photo"
+//                     style={{
+//                       width: "100%",
+//                       height: "100%",
+//                       objectFit: "contain",
+//                       transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`
+//                     }}
+//                   />
+//                 </div>
+//               )}
+//             </div>
+
+//             {/* PHOTO CONTROLS */}
+//             <h6>Photo Controls</h6>
+
+//             <Form.Label>Zoom: {formData.zoom}</Form.Label>
+//             <Form.Range name="zoom" min="0.3" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+
+//             <Form.Label>X Position: {formData.offsetX}px</Form.Label>
+//             <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
+
+//             <Form.Label>Y Position: {formData.offsetY}px</Form.Label>
+//             <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+
+//             {/* BANNER CONTROLS */}
+//             <h6 className="mt-4">Banner Controls</h6>
+
+//             <Form.Label>Zoom: {formData.bannerZoom}</Form.Label>
+//             <Form.Range name="bannerZoom" min="0.3" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
+
+//             <Form.Label>X Position: {formData.bannerX}px</Form.Label>
+//             <Form.Range name="bannerX" min="-300" max="300" value={formData.bannerX} onChange={handleChange} />
+
+//             <Form.Label>Y Position: {formData.bannerY}px</Form.Label>
+//             <Form.Range name="bannerY" min="-300" max="300" value={formData.bannerY} onChange={handleChange} />
+
+//             <Button type="submit" className="w-100 mt-3" variant="primary">
+//               {editing ? "Update" : "Save"}
+//             </Button>
+
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default AnniversaryManager;
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// const API_URL = "https://crafto-backend-zqcn.onrender.com/api/anniversaries";
+
+// const AnniversaryManager = () => {
+//   const [anniversaries, setAnniversaries] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [editing, setEditing] = useState(null);
+
+//   const [search, setSearch] = useState("");
+//   const [page, setPage] = useState(1);
+//   const limit = 5;
+//   const [totalPages, setTotalPages] = useState(1);
+
+//   const [formData, setFormData] = useState({
+//     title: "",
+//     name: "",
+//     date: "",
+//     status: "active",
+
+//     media: null,                 // 🔥 image / video
+//     mediaPreview: "",
+//     mediaType: "",               // image | video
+
+//     banner: null,
+//     bannerPreview: "",
+
+//     zoom: 1,
+//     offsetX: 0,
+//     offsetY: 0,
+
+//     bannerZoom: 1,
+//     bannerX: 0,
+//     bannerY: 0,
+//   });
+
+//   /* ================= FETCH ================= */
+//   const fetchData = async () => {
+//     const res = await axios.get(API_URL, {
+//       params: { search, page, limit },
+//     });
+//     setAnniversaries(res.data.anniversaries);
+//     setTotalPages(res.data.pages);
+//   };
+
+//   useEffect(() => {
+//     fetchData();
+//   }, [page, search]);
+
+//   /* ================= HANDLE CHANGE ================= */
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+
+//     // 🔥 MEDIA (PHOTO / VIDEO)
+//     if (name === "media" && files?.length) {
+//       const file = files[0];
+//       setFormData({
+//         ...formData,
+//         media: file,
+//         mediaPreview: URL.createObjectURL(file),
+//         mediaType: file.type.startsWith("video") ? "video" : "image",
+//       });
+//       return;
+//     }
+
+//     // BANNER
+//     if (name === "banner" && files?.length) {
+//       setFormData({
+//         ...formData,
+//         banner: files[0],
+//         bannerPreview: URL.createObjectURL(files[0]),
+//       });
+//       return;
+//     }
+
+//     setFormData({ ...formData, [name]: value });
+//   };
+
+//   /* ================= SUBMIT ================= */
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const data = new FormData();
+
+//     Object.keys(formData).forEach((key) => {
+//       if (
+//         ["media", "banner", "mediaPreview", "mediaType", "bannerPreview"].includes(key)
+//       )
+//         return;
+//       data.append(key, formData[key]);
+//     });
+
+//     if (formData.media) data.append("media", formData.media);
+//     if (formData.banner) data.append("banner", formData.banner);
+
+//     if (editing) {
+//       await axios.put(`${API_URL}/${editing._id}`, data);
+//     } else {
+//       await axios.post(API_URL, data);
+//     }
+
+//     handleClose();
+//     fetchData();
+//   };
+
+//   /* ================= DELETE ================= */
+//   const handleDelete = async (id) => {
+//     if (window.confirm("Delete this entry?")) {
+//       await axios.delete(`${API_URL}/${id}`);
+//       fetchData();
+//     }
+//   };
+
+//   /* ================= EDIT ================= */
+//   const handleEdit = (item) => {
+//     setEditing(item);
+//     setFormData({
+//       title: item.title,
+//       name: item.name,
+//       date: item.date,
+//       status: item.status,
+
+//       media: null,
+//       mediaPreview: item.media || "",
+//       mediaType: item.mediaType || "image",
+
+//       banner: null,
+//       bannerPreview: item.banner || "",
+
+//       zoom: item.zoom || 1,
+//       offsetX: item.offsetX || 0,
+//       offsetY: item.offsetY || 0,
+
+//       bannerZoom: item.bannerZoom || 1,
+//       bannerX: item.bannerX || 0,
+//       bannerY: item.bannerY || 0,
+//     });
+//     setShowModal(true);
+//   };
+
+//   /* ================= CLOSE ================= */
+//   const handleClose = () => {
+//     setEditing(null);
+//     setShowModal(false);
+//     setFormData({
+//       title: "",
+//       name: "",
+//       date: "",
+//       status: "active",
+
+//       media: null,
+//       mediaPreview: "",
+//       mediaType: "",
+
+//       banner: null,
+//       bannerPreview: "",
+
+//       zoom: 1,
+//       offsetX: 0,
+//       offsetY: 0,
+
+//       bannerZoom: 1,
+//       bannerX: 0,
+//       bannerY: 0,
+//     });
+//   };
+
+//   return (
+//     <div className="p-3 p-md-4">
+
+//       {/* HEADER */}
+//       <div className="d-flex justify-content-between mb-3">
+//         <h4>Anniversary Manager</h4>
+//         <Button onClick={() => setShowModal(true)}>
+//           <FaPlus /> Add Anniversary
+//         </Button>
+//       </div>
+
+//       {/* SEARCH */}
+//       <input
+//         className="form-control mb-3"
+//         placeholder="Search by name..."
+//         value={search}
+//         onChange={(e) => {
+//           setSearch(e.target.value);
+//           setPage(1);
+//         }}
+//       />
+
+//       {/* TABLE */}
+//       <Table bordered hover className="text-center align-middle">
+//         <thead>
+//           <tr>
+//             <th>#</th>
+//             <th>Banner</th>
+//             <th>Media</th>
+//             <th>Name</th>
+//             <th>Title</th>
+//             <th>Date</th>
+//             <th>Status</th>
+//             <th>Actions</th>
+//           </tr>
+//         </thead>
+
+//         <tbody>
+//           {anniversaries.map((a, i) => (
+//             <tr key={a._id}>
+//               <td>{(page - 1) * limit + i + 1}</td>
+
+//               <td>
+//                 {a.banner ? (
+//                   <Image src={a.banner} width="80" height="45" />
+//                 ) : "—"}
+//               </td>
+
+//               <td>
+//                 {a.mediaType === "video" ? (
+//                   <video src={a.media} width="60" height="60" />
+//                 ) : (
+//                   <Image src={a.media} width="60" height="60" roundedCircle />
+//                 )}
+//               </td>
+
+//               <td>{a.name}</td>
+//               <td>{a.title}</td>
+//               <td>{a.date}</td>
+//               <td>{a.status}</td>
+
+//               <td>
+//                 <Button size="sm" variant="warning" onClick={() => handleEdit(a)}>
+//                   <FaEdit />
+//                 </Button>{" "}
+//                 <Button size="sm" variant="danger" onClick={() => handleDelete(a._id)}>
+//                   <FaTrash />
+//                 </Button>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </Table>
+
+//       {/* MODAL */}
+//       <Modal show={showModal} onHide={handleClose} centered size="lg">
+//         <Modal.Header closeButton>
+//           <Modal.Title>{editing ? "Edit" : "Add"} Anniversary</Modal.Title>
+//         </Modal.Header>
+
+//         <Modal.Body>
+//           <Form onSubmit={handleSubmit}>
+
+//             <Form.Group className="mb-2">
+//               <Form.Label>Title</Form.Label>
+//               <Form.Control name="title" value={formData.title} onChange={handleChange} />
+//             </Form.Group>
+
+//             <Form.Group className="mb-2">
+//               <Form.Label>Name</Form.Label>
+//               <Form.Control name="name" value={formData.name} onChange={handleChange} />
+//             </Form.Group>
+
+//             <Form.Group className="mb-2">
+//               <Form.Label>Date</Form.Label>
+//               <Form.Control type="date" name="date" value={formData.date} onChange={handleChange} />
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Photo / Video</Form.Label>
+//               <Form.Control
+//                 type="file"
+//                 name="media"
+//                 accept="image/*,video/*"
+//                 onChange={handleChange}
+//               />
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Banner</Form.Label>
+//               <Form.Control type="file" name="banner" onChange={handleChange} />
+//             </Form.Group>
+
+//             {/* PREVIEW */}
+//             {formData.mediaPreview && (
+//               formData.mediaType === "video" ? (
+//                 <video src={formData.mediaPreview} controls width="100%" />
+//               ) : (
+//                 <img src={formData.mediaPreview} alt="media" width="100%" />
+//               )
+//             )}
+
+//             <Button type="submit" className="w-100 mt-3">
+//               {editing ? "Update" : "Save"}
+//             </Button>
+
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default AnniversaryManager;
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Modal, Form, Table, Image } from "react-bootstrap";
@@ -389,6 +1089,20 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 const API_URL = "https://crafto-backend-zqcn.onrender.com/api/anniversaries";
 
 const AnniversaryManager = () => {
+  const positionMap = {
+  topLeft: { top: 10, left: 10 },
+  topCenter: { top: 10, left: "50%", transform: "translateX(-50%)" },
+  topRight: { top: 10, right: 10 },
+
+  centerLeft: { top: "50%", left: 10, transform: "translateY(-50%)" },
+  center: { top: "50%", left: "50%", transform: "translate(-50%, -50%)" },
+  centerRight: { top: "50%", right: 10, transform: "translateY(-50%)" },
+
+  bottomLeft: { bottom: 10, left: 10 },
+  bottomCenter: { bottom: 10, left: "50%", transform: "translateX(-50%)" },
+  bottomRight: { bottom: 10, right: 10 },
+};
+
   const [anniversaries, setAnniversaries] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -397,6 +1111,23 @@ const AnniversaryManager = () => {
   const [page, setPage] = useState(1);
   const limit = 5;
   const [totalPages, setTotalPages] = useState(1);
+  const PROFILE_SHAPES = ["circle", "square", "rounded"];
+  const PROFILE_ANIMATIONS = [
+  "none",
+  "fadeIn",
+  "slideUp",
+  "zoomIn",
+  "rotateIn",
+];
+
+const TRANSITIONS = [
+  "fade",
+  "slideFromBottom",
+  "slideFromTop",
+  "slideFromLeft",
+  "slideFromRight",
+  "zoomIn",
+];
 
   const [formData, setFormData] = useState({
     title: "",
@@ -404,8 +1135,10 @@ const AnniversaryManager = () => {
     date: "",
     status: "active",
 
-    photo: null,
-    photoPreview: "",
+    media: null,
+    mediaPreview: "",
+    mediaType: "",
+
     banner: null,
     bannerPreview: "",
 
@@ -416,13 +1149,24 @@ const AnniversaryManager = () => {
     bannerZoom: 1,
     bannerX: 0,
     bannerY: 0,
+
+     profileSize: 140,
+  profileShape: "circle",
+  profilePosition: "center",
+  profileAnimation: "fadeIn",
+  profileAnimationDuration: 0.6,
+  profileAnimationDelay: 0, 
+
+  transitionType: "fade",
+  transitionDuration: 0.8,
+  transitionDelay: 0,
   });
 
+  /* ================= FETCH ================= */
   const fetchData = async () => {
     const res = await axios.get(API_URL, {
       params: { search, page, limit },
     });
-
     setAnniversaries(res.data.anniversaries);
     setTotalPages(res.data.pages);
   };
@@ -431,41 +1175,51 @@ const AnniversaryManager = () => {
     fetchData();
   }, [page, search]);
 
+  /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    if (name === "photo" && files?.length) {
-      setFormData({
-        ...formData,
-        photo: files[0],
-        photoPreview: URL.createObjectURL(files[0]),
-      });
+    if (name === "media" && files?.length) {
+      const file = files[0];
+      setFormData((prev) => ({
+        ...prev,
+        media: file,
+        mediaPreview: URL.createObjectURL(file),
+        mediaType: file.type.startsWith("video") ? "video" : "image",
+      }));
       return;
     }
 
     if (name === "banner" && files?.length) {
-      setFormData({
-        ...formData,
-        banner: files[0],
-        bannerPreview: URL.createObjectURL(files[0]),
-      });
+      const file = files[0];
+      setFormData((prev) => ({
+        ...prev,
+        banner: file,
+        bannerPreview: URL.createObjectURL(file),
+      }));
       return;
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = new FormData();
 
     Object.keys(formData).forEach((key) => {
-      if (key === "photo" || key === "banner") return;
+      if (
+        ["media", "banner", "mediaPreview", "mediaType", "bannerPreview"].includes(
+          key
+        )
+      )
+        return;
       data.append(key, formData[key]);
     });
 
-    if (formData.photo) data.append("photo", formData.photo);
+    if (formData.media) data.append("media", formData.media);
     if (formData.banner) data.append("banner", formData.banner);
 
     if (editing) {
@@ -478,6 +1232,7 @@ const AnniversaryManager = () => {
     fetchData();
   };
 
+  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     if (window.confirm("Delete this entry?")) {
       await axios.delete(`${API_URL}/${id}`);
@@ -485,17 +1240,19 @@ const AnniversaryManager = () => {
     }
   };
 
+  /* ================= EDIT ================= */
   const handleEdit = (item) => {
     setEditing(item);
-
     setFormData({
       title: item.title,
       name: item.name,
       date: item.date,
       status: item.status,
 
-      photo: null,
-      photoPreview: item.photo || "",
+      media: null,
+      mediaPreview: item.media || "",
+      mediaType: item.mediaType || "image",
+
       banner: null,
       bannerPreview: item.banner || "",
 
@@ -506,23 +1263,37 @@ const AnniversaryManager = () => {
       bannerZoom: item.bannerZoom || 1,
       bannerX: item.bannerX || 0,
       bannerY: item.bannerY || 0,
-    });
 
+      profileSize: item.profile?.size || 140,
+profileShape: item.profile?.shape || "circle",
+
+profileAnimation: item.animation?.profile?.effect || "fadeIn",
+profileAnimationDuration: item.animation?.profile?.duration || 0.6,
+profileAnimationDelay: item.animation?.profile?.delay || 0,
+
+transitionType: item.transition?.type || "fade",
+transitionDuration: item.transition?.duration || 0.8,
+transitionDelay: item.transition?.delay || 0,
+
+
+    });
     setShowModal(true);
   };
 
+  /* ================= CLOSE ================= */
   const handleClose = () => {
     setEditing(null);
     setShowModal(false);
-
     setFormData({
       title: "",
       name: "",
       date: "",
       status: "active",
 
-      photo: null,
-      photoPreview: "",
+      media: null,
+      mediaPreview: "",
+      mediaType: "",
+
       banner: null,
       bannerPreview: "",
 
@@ -533,24 +1304,29 @@ const AnniversaryManager = () => {
       bannerZoom: 1,
       bannerX: 0,
       bannerY: 0,
+      profileSize: 140,
+    profileShape: "circle",
+
+    profileAnimation: "fadeIn",
+    profileAnimationDuration: 0.6,
+
+    transitionType: "fade",
+    transitionDuration: 0.8,
     });
   };
 
   return (
     <div className="p-3 p-md-4">
-
       {/* HEADER */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-        <h4 className="m-0">Anniversary Manager</h4>
-
-        <Button className="w-100 w-md-auto" onClick={() => setShowModal(true)}>
+      <div className="d-flex justify-content-between mb-3">
+        <h4>Anniversary Manager</h4>
+        <Button onClick={() => setShowModal(true)}>
           <FaPlus /> Add Anniversary
         </Button>
       </div>
 
       {/* SEARCH */}
       <input
-        type="text"
         className="form-control mb-3"
         placeholder="Search by name..."
         value={search}
@@ -560,99 +1336,72 @@ const AnniversaryManager = () => {
         }}
       />
 
-      {/* RESPONSIVE TABLE */}
-      <div className="table-responsive">
-        <Table bordered hover className="align-middle text-center">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Banner</th>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>Title</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+      {/* TABLE */}
+      <Table bordered hover className="text-center align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Banner</th>
+            <th>Media</th>
+            <th>Name</th>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {anniversaries.map((a, i) => (
+            <tr key={a._id}>
+              <td>{(page - 1) * limit + i + 1}</td>
+
+              <td>
+                {a.banner ? (
+                  <Image src={a.banner} width="80" height="45" />
+                ) : (
+                  "—"
+                )}
+              </td>
+
+              <td>
+                {a.mediaType === "video" ? (
+                  <video src={a.media} width="60" height="60" />
+                ) : (
+                  <Image src={a.media} width="60" height="60" roundedCircle />
+                )}
+              </td>
+
+              <td>{a.name}</td>
+              <td>{a.title}</td>
+              <td>{a.date}</td>
+              <td>{a.status}</td>
+
+              <td>
+                <Button size="sm" variant="warning" onClick={() => handleEdit(a)}>
+                  <FaEdit />
+                </Button>{" "}
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => handleDelete(a._id)}
+                >
+                  <FaTrash />
+                </Button>
+              </td>
             </tr>
-          </thead>
-
-          <tbody>
-            {anniversaries.map((a, i) => (
-              <tr key={a._id}>
-                <td>{(page - 1) * limit + i + 1}</td>
-
-                <td>
-                  {a.banner ? (
-                    <Image
-                      src={a.banner}
-                      width="90"
-                      height="50"
-                      style={{ objectFit: "cover", borderRadius: "6px" }}
-                    />
-                  ) : "—"}
-                </td>
-
-                <td>
-                  {a.photo ? (
-                    <Image
-                      src={a.photo}
-                      width="60"
-                      height="60"
-                      roundedCircle
-                      style={{ objectFit: "cover" }}
-                    />
-                  ) : "—"}
-                </td>
-
-                <td>{a.name}</td>
-                <td>{a.title}</td>
-                <td>{a.date}</td>
-                <td>{a.status}</td>
-
-                <td>
-                  <div className="d-flex justify-content-center gap-2">
-                    <Button size="sm" variant="warning" onClick={() => handleEdit(a)}>
-                      <FaEdit />
-                    </Button>
-
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(a._id)}>
-                      <FaTrash />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-
-      {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-3 py-3">
-        <Button size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Prev
-        </Button>
-
-        <span>
-          Page {page} / {totalPages}
-        </span>
-
-        <Button size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
-          Next
-        </Button>
-      </div>
+          ))}
+        </tbody>
+      </Table>
 
       {/* MODAL */}
-      <Modal show={showModal} onHide={handleClose} centered size="lg">
+      {/* <Modal show={showModal} onHide={handleClose} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>
-            {editing ? "Edit Anniversary" : "Add Anniversary"}
-          </Modal.Title>
+          <Modal.Title>{editing ? "Edit" : "Add"} Anniversary</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+      <Modal.Body style={{ maxHeight: "75vh", overflowY: "auto" }}>
           <Form onSubmit={handleSubmit}>
-
-            {/* TEXT FIELDS */}
             <Form.Group className="mb-2">
               <Form.Label>Title</Form.Label>
               <Form.Control name="title" value={formData.title} onChange={handleChange} />
@@ -668,35 +1417,407 @@ const AnniversaryManager = () => {
               <Form.Control type="date" name="date" value={formData.date} onChange={handleChange} />
             </Form.Group>
 
-            {/* FILE UPLOAD ROW */}
-            <div className="row my-3">
-              <div className="col-12 col-md-6">
-                <Form.Label>Photo Upload</Form.Label>
-                <Form.Control type="file" name="photo" onChange={handleChange} />
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Photo / Video</Form.Label>
+              <Form.Control type="file" name="media" accept="image/*,video/*" onChange={handleChange} />
+            </Form.Group>
 
-              <div className="col-12 col-md-6 mt-3 mt-md-0">
-                <Form.Label>Banner Upload</Form.Label>
-                <Form.Control type="file" name="banner" onChange={handleChange} />
-              </div>
-            </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Banner</Form.Label>
+              <Form.Control type="file" name="banner" onChange={handleChange} />
+            </Form.Group>
 
-            {/* LIVE PREVIEW */}
-            <div
-              style={{
-                width: "100%",
-                maxWidth: 320,
-                height: 300,
-                margin: "20px auto",
-                position: "relative",
-                overflow: "hidden",
-                borderRadius: 12,
-                border: "1px dashed #999",
-                background: "#f2f2f2",
-              }}
-            >
-              {/* Banner */}
-              {formData.bannerPreview && (
+            <Form.Group className="mb-3">
+  <Form.Label>Profile Shape</Form.Label>
+  <Form.Select
+    name="profileShape"
+    value={formData.profileShape}
+    onChange={handleChange}
+  >
+    <option value="circle">Circle</option>
+    <option value="square">Square</option>
+    <option value="rounded">Rounded</option>
+  </Form.Select>
+</Form.Group>
+
+<Form.Group className="mb-3">
+  <Form.Label>Profile Size</Form.Label>
+  <Form.Range
+    name="profileSize"
+    min="80"
+    max="300"
+    value={formData.profileSize}
+    onChange={handleChange}
+  />
+</Form.Group>
+
+<Form.Group className="mb-3">
+  <Form.Label>Profile Animation</Form.Label>
+  <Form.Select
+    name="profileAnimation"
+    value={formData.profileAnimation}
+    onChange={handleChange}
+  >
+    <option value="none">None</option>
+    <option value="fadeIn">Fade In</option>
+    <option value="slideUp">Slide Up</option>
+    <option value="zoomIn">Zoom In</option>
+    <option value="rotateIn">Rotate In</option>
+  </Form.Select>
+  <Form.Group className="mb-3">
+  <Form.Label>Animation Duration (sec)</Form.Label>
+  <Form.Control
+    type="number"
+    step="0.1"
+    name="profileAnimationDuration"
+    value={formData.profileAnimationDuration}
+    onChange={handleChange}
+  />
+</Form.Group>
+
+<Form.Group className="mb-3">
+  <Form.Label>Animation Delay (sec)</Form.Label>
+  <Form.Control
+    type="number"
+    step="0.1"
+    name="profileAnimationDelay"
+    value={formData.profileAnimationDelay}
+    onChange={handleChange}
+  />
+</Form.Group>
+
+  <Form.Group className="mb-3">
+  <Form.Label>Profile Position</Form.Label>
+  <Form.Select
+    name="profilePosition"
+    value={formData.profilePosition}
+    onChange={handleChange}
+  >
+    <option value="topLeft">Top Left</option>
+    <option value="topCenter">Top Center</option>
+    <option value="topRight">Top Right</option>
+
+    <option value="centerLeft">Center Left</option>
+    <option value="center">Center</option>
+    <option value="centerRight">Center Right</option>
+
+    <option value="bottomLeft">Bottom Left</option>
+    <option value="bottomCenter">Bottom Center</option>
+    <option value="bottomRight">Bottom Right</option>
+  </Form.Select>
+</Form.Group>
+
+</Form.Group>
+<Form.Group className="mb-3">
+  <Form.Label>Transition</Form.Label>
+  <Form.Select
+    name="transitionType"
+    value={formData.transitionType}
+    onChange={handleChange}
+  >
+    <option value="fade">Fade</option>
+    <option value="slideFromBottom">Slide From Bottom</option>
+    <option value="slideFromTop">Slide From Top</option>
+    <option value="slideFromLeft">Slide From Left</option>
+    <option value="slideFromRight">Slide From Right</option>
+    <option value="zoomIn">Zoom In</option>
+  </Form.Select>
+  <Form.Group className="mb-3">
+  <Form.Label>Transition Duration (sec)</Form.Label>
+  <Form.Control
+    type="number"
+    step="0.1"
+    name="transitionDuration"
+    value={formData.transitionDuration}
+    onChange={handleChange}
+  />
+</Form.Group>
+
+<Form.Group className="mb-3">
+  <Form.Label>Transition Delay (sec)</Form.Label>
+  <Form.Control
+    type="number"
+    step="0.1"
+    name="transitionDelay"
+    value={formData.transitionDelay}
+    onChange={handleChange}
+  />
+</Form.Group>
+
+</Form.Group> */}
+
+{/* MODAL */}
+<Modal show={showModal} onHide={handleClose} centered size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title>{editing ? "Edit" : "Add"} Anniversary</Modal.Title>
+  </Modal.Header>
+
+  <Modal.Body style={{ maxHeight: "75vh", overflowY: "auto" }}>
+    <Form onSubmit={handleSubmit}>
+
+      {/* BASIC INFO */}
+      <Form.Group className="mb-2">
+        <Form.Label>Title</Form.Label>
+        <Form.Control
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-2">
+        <Form.Label>Name</Form.Label>
+        <Form.Control
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-2">
+        <Form.Label>Date</Form.Label>
+        <Form.Control
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      {/* MEDIA */}
+      <Form.Group className="mb-3">
+        <Form.Label>Photo / Video</Form.Label>
+        <Form.Control
+          type="file"
+          name="media"
+          accept="image/*,video/*"
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Banner</Form.Label>
+        <Form.Control
+          type="file"
+          name="banner"
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <hr />
+
+      {/* PROFILE SETTINGS */}
+      <h6>Profile Settings</h6>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Profile Shape</Form.Label>
+        <Form.Select
+          name="profileShape"
+          value={formData.profileShape}
+          onChange={handleChange}
+        >
+          <option value="circle">Circle</option>
+          <option value="square">Square</option>
+          <option value="rounded">Rounded</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Profile Size</Form.Label>
+        <Form.Range
+          name="profileSize"
+          min="80"
+          max="300"
+          value={formData.profileSize}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Profile Position</Form.Label>
+        <Form.Select
+          name="profilePosition"
+          value={formData.profilePosition}
+          onChange={handleChange}
+        >
+          <option value="topLeft">Top Left</option>
+          <option value="topCenter">Top Center</option>
+          <option value="topRight">Top Right</option>
+          <option value="centerLeft">Center Left</option>
+          <option value="center">Center</option>
+          <option value="centerRight">Center Right</option>
+          <option value="bottomLeft">Bottom Left</option>
+          <option value="bottomCenter">Bottom Center</option>
+          <option value="bottomRight">Bottom Right</option>
+        </Form.Select>
+      </Form.Group>
+
+      <hr />
+
+      {/* PROFILE ANIMATION */}
+      <h6>Profile Animation</h6>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Animation Type</Form.Label>
+        <Form.Select
+          name="profileAnimation"
+          value={formData.profileAnimation}
+          onChange={handleChange}
+        >
+          <option value="none">None</option>
+          <option value="fadeIn">Fade In</option>
+          <option value="slideUp">Slide Up</option>
+          <option value="zoomIn">Zoom In</option>
+          <option value="rotateIn">Rotate In</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Animation Duration (sec)</Form.Label>
+        <Form.Control
+          type="number"
+          step="0.1"
+          name="profileAnimationDuration"
+          value={formData.profileAnimationDuration}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Animation Delay (sec)</Form.Label>
+        <Form.Control
+          type="number"
+          step="0.1"
+          name="profileAnimationDelay"
+          value={formData.profileAnimationDelay}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <hr />
+
+      {/* TRANSITION */}
+      <h6>Transition</h6>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Transition Type</Form.Label>
+        <Form.Select
+          name="transitionType"
+          value={formData.transitionType}
+          onChange={handleChange}
+        >
+          <option value="fade">Fade</option>
+          <option value="slideFromBottom">Slide From Bottom</option>
+          <option value="slideFromTop">Slide From Top</option>
+          <option value="slideFromLeft">Slide From Left</option>
+          <option value="slideFromRight">Slide From Right</option>
+          <option value="zoomIn">Zoom In</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Transition Duration (sec)</Form.Label>
+        <Form.Control
+          type="number"
+          step="0.1"
+          name="transitionDuration"
+          value={formData.transitionDuration}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Transition Delay (sec)</Form.Label>
+        <Form.Control
+          type="number"
+          step="0.1"
+          name="transitionDelay"
+          value={formData.transitionDelay}
+          onChange={handleChange}
+        />
+      </Form.Group>
+
+   
+
+            {/* MEDIA PREVIEW */}
+            {/* {formData.mediaPreview && formData.mediaType === "image" && (
+              <div style={{ height: 250, overflow: "hidden", border: "1px dashed #ccc" }}>
+                <img
+                  src={formData.mediaPreview}
+                  alt="media"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
+                  }}
+                />
+              </div>
+            )}
+
+            {formData.mediaPreview && formData.mediaType === "video" && (
+              <video src={formData.mediaPreview} controls width="100%" />
+            )} */}
+
+            {/* MEDIA PREVIEW */}
+{formData.mediaPreview && formData.mediaType === "image" && (
+  <div
+    style={{
+      height: 250,
+      border: "1px dashed #ccc",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      position: "relative", // ✅ IMPORTANT
+    }}
+  >
+    <div
+      style={{
+        position: "absolute", // ✅ IMPORTANT
+        ...positionMap[formData.profilePosition],
+        width: formData.profileSize,
+        height: formData.profileSize,
+        overflow: "hidden",
+        borderRadius:
+          formData.profileShape === "circle"
+            ? "50%"
+            : formData.profileShape === "rounded"
+            ? "16px"
+            : "0",
+     animation:
+  formData.profileAnimation !== "none"
+    ? `${formData.profileAnimation} ${formData.profileAnimationDuration}s ease ${formData.profileAnimationDelay}s`
+    : "none",
+
+      }}
+    >
+      <img
+        src={formData.mediaPreview}
+        alt="media"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
+        }}
+      />
+    </div>
+  </div>
+)}
+
+
+
+            {/* BANNER PREVIEW */}
+            {formData.bannerPreview && (
+              <div
+                style={{
+                  height: 160,
+                  overflow: "hidden",
+                  marginTop: 15,
+                  borderRadius: 8,
+                  border: "1px dashed #ccc",
+                }}
+              >
                 <img
                   src={formData.bannerPreview}
                   alt="banner"
@@ -704,69 +1825,47 @@ const AnniversaryManager = () => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    position: "absolute",
-                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
+                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
                   }}
                 />
-              )}
-
-              {/* Photo */}
-              {formData.photoPreview && (
-                <div
-                  style={{
-                    width: 140,
-                    height: 140,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    border: "4px solid white",
-                  }}
-                >
-                  <img
-                    src={formData.photoPreview}
-                    alt="photo"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* PHOTO CONTROLS */}
-            <h6>Photo Controls</h6>
+            {formData.mediaPreview && formData.mediaType === "image" && (
+              <>
+                <h6 className="mt-3">Photo Controls</h6>
 
-            <Form.Label>Zoom: {formData.zoom}</Form.Label>
-            <Form.Range name="zoom" min="0.3" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+                <Form.Label>Zoom</Form.Label>
+                <Form.Range name="zoom" min="0.3" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
 
-            <Form.Label>X Position: {formData.offsetX}px</Form.Label>
-            <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
+                <Form.Label>X Position</Form.Label>
+                <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
 
-            <Form.Label>Y Position: {formData.offsetY}px</Form.Label>
-            <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+                <Form.Label>Y Position</Form.Label>
+                <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+              </>
+            )}
 
             {/* BANNER CONTROLS */}
-            <h6 className="mt-4">Banner Controls</h6>
+            {formData.bannerPreview && (
+              <>
+                <h6 className="mt-3">Banner Controls</h6>
 
-            <Form.Label>Zoom: {formData.bannerZoom}</Form.Label>
-            <Form.Range name="bannerZoom" min="0.3" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
+                <Form.Label>Zoom</Form.Label>
+                <Form.Range name="bannerZoom" min="0.3" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
 
-            <Form.Label>X Position: {formData.bannerX}px</Form.Label>
-            <Form.Range name="bannerX" min="-300" max="300" value={formData.bannerX} onChange={handleChange} />
+                <Form.Label>X Position</Form.Label>
+                <Form.Range name="bannerX" min="-300" max="300" value={formData.bannerX} onChange={handleChange} />
 
-            <Form.Label>Y Position: {formData.bannerY}px</Form.Label>
-            <Form.Range name="bannerY" min="-300" max="300" value={formData.bannerY} onChange={handleChange} />
+                <Form.Label>Y Position</Form.Label>
+                <Form.Range name="bannerY" min="-300" max="300" value={formData.bannerY} onChange={handleChange} />
+              </>
+            )}
 
-            <Button type="submit" className="w-100 mt-3" variant="primary">
+            <Button type="submit" className="w-100 mt-3">
               {editing ? "Update" : "Save"}
             </Button>
-
           </Form>
         </Modal.Body>
       </Modal>

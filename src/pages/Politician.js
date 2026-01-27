@@ -1,415 +1,1528 @@
-// // import React, { useEffect, useState } from "react";
-// // import { Container, Card, Button, Table, Badge, Modal, Form } from "react-bootstrap";
-// // import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
-// // import axios from "axios";
+// // // import React, { useEffect, useState } from "react";
+// // // import { Container, Card, Button, Table, Badge, Modal, Form } from "react-bootstrap";
+// // // import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+// // // import axios from "axios";
 
-// // const Politician = () => {
+// // // const Politician = () => {
+// // //   const [politicians, setPoliticians] = useState([]);
+// // //   const [show, setShow] = useState(false);
+// // //   const [editId, setEditId] = useState(null);
+// // //   const [form, setForm] = useState({
+// // //     title: "",
+// // //     abbreviation: "",
+// // //     status: "active", 
+// // //     logo: null,
+// // //   });
+// // //   const [filePreview, setFilePreview] = useState(null);
+
+// // //   const BASE_URL = "https://crafto-backend-zqcn.onrender.com/api"; // change to live
+
+// // //   const fetchPoliticians = async () => {
+// // //     try {
+// // //       const { data } = await axios.get(`${BASE_URL}/politicians`);
+// // //       setPoliticians(data.politicians || []);
+// // //     } catch (err) { console.error(err); }
+// // //   };
+
+// // //   useEffect(() => { fetchPoliticians(); }, []);
+
+// // //   const handleShow = (pl = null) => {
+// // //     if (pl) {
+// // //       setEditId(pl._id);
+// // //       setForm({ title: pl.title, abbreviation: pl.abbreviation, status: pl.status, logo: null });
+// // //       setFilePreview(pl.logo || null);
+// // //     } else {
+// // //       setEditId(null);
+// // //       setForm({ title: "", abbreviation: "", status: "active", logo: null });
+// // //       setFilePreview(null);
+// // //     }
+// // //     setShow(true);
+// // //   };
+// // //   const handleClose = () => setShow(false);
+
+// // //   const handleChange = (e) => {
+// // //     if (e.target.name === "logo") {
+// // //       const file = e.target.files[0];
+// // //       setForm({ ...form, logo: file });
+// // //       setFilePreview(URL.createObjectURL(file));
+// // //     } else {
+// // //       setForm({ ...form, [e.target.name]: e.target.value });
+// // //     }
+// // //   };
+
+// // //   const handleSubmit = async () => {
+// // //     if (!form.title || !form.abbreviation) return alert("Title & Abbreviation required!");
+
+// // //     try {
+// // //       const fd = new FormData();
+// // //       fd.append("title", form.title);
+// // //       fd.append("abbreviation", form.abbreviation);
+// // //       fd.append("status", form.status);
+// // //       if (form.logo) fd.append("logo", form.logo);
+
+// // //       const url = editId ? `${BASE_URL}/politicians/${editId}` : `${BASE_URL}/politicians`;
+// // //       const method = editId ? "put" : "post";
+
+// // //       await axios[method](url, fd, { headers: { "Content-Type": "multipart/form-data" } });
+// // //       fetchPoliticians();
+// // //       handleClose();
+// // //     } catch (err) {
+// // //       console.error(err);
+// // //       alert(err.response?.data?.message || "Error saving politician");
+// // //     }
+// // //   };
+
+// // //   const handleDelete = async (id) => {
+// // //     if (!window.confirm("Delete this politician?")) return;
+// // //     try {
+// // //       await axios.delete(`${BASE_URL}/politicians/${id}`);
+// // //       fetchPoliticians();
+// // //     } catch (err) { console.error(err); alert("Failed to delete"); }
+// // //   };
+
+// // //   return (
+// // //     <Container fluid>
+// // //       <div className="d-flex justify-content-between align-items-center mb-4">
+// // //         <h2>Politicians Management</h2>
+// // //         <Button variant="primary" onClick={() => handleShow()}>
+// // //           <FaPlus className="me-2" /> Add Politician
+// // //         </Button>
+// // //       </div>
+
+// // //       <Card>
+// // //         <Card.Body>
+// // //           <Table responsive hover>
+// // //             <thead>
+// // //               <tr>
+// // //                 <th>Title</th>
+// // //                 <th>Abbreviation</th>
+// // //                 <th>Logo</th>
+// // //                 <th>Status</th>
+// // //                 <th>Actions</th>
+// // //               </tr>
+// // //             </thead>
+// // //             <tbody>
+// // //               {politicians.map(p => (
+// // //                 <tr key={p._id}>
+// // //                   <td>{p.title}</td>
+// // //                   <td>{p.abbreviation}</td>
+// // //                   <td>{p.logo && <img src={p.logo} alt="logo" style={{ height:50 }} />}</td>
+// // //                   <td><Badge bg={p.status==="active"?"success":"secondary"}>{p.status}</Badge></td>
+// // //                   <td>
+// // //                     <Button variant="outline-primary" size="sm" className="me-2" onClick={()=>handleShow(p)}><FaEdit/></Button>
+// // //                     <Button variant="outline-danger" size="sm" onClick={()=>handleDelete(p._id)}><FaTrash/></Button>
+// // //                   </td>
+// // //                 </tr>
+// // //               ))}
+// // //             </tbody>
+// // //           </Table>
+// // //         </Card.Body>
+// // //       </Card>
+
+// // //       <Modal show={show} onHide={handleClose} size="md">
+// // //         <Modal.Header closeButton>
+// // //           <Modal.Title>{editId ? "Edit Politician" : "Add Politician"}</Modal.Title>
+// // //         </Modal.Header>
+// // //         <Modal.Body>
+// // //           <Form>
+// // //             <Form.Group className="mb-3">
+// // //               <Form.Label>Title</Form.Label>
+// // //               <Form.Control name="title" value={form.title} onChange={handleChange} />
+// // //             </Form.Group>
+// // //             <Form.Group className="mb-3">
+// // //               <Form.Label>Abbreviation</Form.Label>
+// // //               <Form.Control name="abbreviation" value={form.abbreviation} onChange={handleChange} />
+// // //             </Form.Group>
+// // //             <Form.Group className="mb-3">
+// // //               <Form.Label>Logo</Form.Label>
+// // //               <Form.Control type="file" name="logo" onChange={handleChange} />
+// // //               {filePreview && <img src={filePreview} alt="logo-preview" style={{ maxWidth:"100%", maxHeight:"150px", marginTop:"10px" }}/>}
+// // //             </Form.Group>
+// // //             <Form.Group className="mb-3">
+// // //               <Form.Label>Status</Form.Label>
+// // //               <Form.Select name="status" value={form.status} onChange={handleChange}>
+// // //                 <option value="active">Active</option>
+// // //                 <option value="inactive">Inactive</option>
+// // //               </Form.Select>
+// // //             </Form.Group>
+// // //           </Form>
+// // //         </Modal.Body>
+// // //         <Modal.Footer>
+// // //           <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+// // //           <Button variant="primary" onClick={handleSubmit}>Save</Button>
+// // //         </Modal.Footer>
+// // //       </Modal>
+// // //     </Container>
+// // //   );
+// // // };
+
+
+// // // export default Politician;
+
+
+
+// // import React, { useEffect, useState } from "react";
+// // import axios from "axios";
+// // import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// // import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// // const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
+// // const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
+// // const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
+
+// // const PoliticianManager = () => {
 // //   const [politicians, setPoliticians] = useState([]);
-// //   const [show, setShow] = useState(false);
-// //   const [editId, setEditId] = useState(null);
-// //   const [form, setForm] = useState({
+// //   const [religiousList, setReligiousList] = useState([]);
+// //   const [languageList, setLanguageList] = useState([]);
+// //   const [showModal, setShowModal] = useState(false);
+// //   const [editing, setEditing] = useState(null);
+// //   const [formData, setFormData] = useState({
 // //     title: "",
 // //     abbreviation: "",
-// //     status: "active", 
-// //     logo: null,
+// //     status: "active",
+// //     religious: "",
+// //     language: "",
+// //     file: null,
+// //     preview: "",
 // //   });
-// //   const [filePreview, setFilePreview] = useState(null);
 
-// //   const BASE_URL = "https://crafto-backend-zqcn.onrender.com/api"; // change to live
-
-// //   const fetchPoliticians = async () => {
-// //     try {
-// //       const { data } = await axios.get(`${BASE_URL}/politicians`);
-// //       setPoliticians(data.politicians || []);
-// //     } catch (err) { console.error(err); }
+// //   // Fetch data
+// //   const fetchData = async () => {
+// //     const [polRes, relRes, langRes] = await Promise.all([
+// //       axios.get(API_URL),
+// //       axios.get(RELIGIOUS_API),
+// //       axios.get(LANGUAGE_API),
+// //     ]);
+// //     setPoliticians(polRes.data.politicians || []);
+// //     setReligiousList(relRes.data.religiousList || relRes.data);
+// //     setLanguageList(langRes.data || []);
 // //   };
 
-// //   useEffect(() => { fetchPoliticians(); }, []);
-
-// //   const handleShow = (pl = null) => {
-// //     if (pl) {
-// //       setEditId(pl._id);
-// //       setForm({ title: pl.title, abbreviation: pl.abbreviation, status: pl.status, logo: null });
-// //       setFilePreview(pl.logo || null);
-// //     } else {
-// //       setEditId(null);
-// //       setForm({ title: "", abbreviation: "", status: "active", logo: null });
-// //       setFilePreview(null);
-// //     }
-// //     setShow(true);
-// //   };
-// //   const handleClose = () => setShow(false);
+// //   useEffect(() => {
+// //     fetchData();
+// //   }, []);
 
 // //   const handleChange = (e) => {
-// //     if (e.target.name === "logo") {
-// //       const file = e.target.files[0];
-// //       setForm({ ...form, logo: file });
-// //       setFilePreview(URL.createObjectURL(file));
+// //     const { name, value, files } = e.target;
+// //     if (files?.length) {
+// //       const file = files[0];
+// //       setFormData({ ...formData, file, preview: URL.createObjectURL(file) });
 // //     } else {
-// //       setForm({ ...form, [e.target.name]: e.target.value });
+// //       setFormData({ ...formData, [name]: value });
 // //     }
 // //   };
 
-// //   const handleSubmit = async () => {
-// //     if (!form.title || !form.abbreviation) return alert("Title & Abbreviation required!");
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
+// //     const data = new FormData();
+// //     Object.entries(formData).forEach(([k, v]) => {
+// //       if (v && k !== "preview") data.append(k, v);
+// //     });
 
-// //     try {
-// //       const fd = new FormData();
-// //       fd.append("title", form.title);
-// //       fd.append("abbreviation", form.abbreviation);
-// //       fd.append("status", form.status);
-// //       if (form.logo) fd.append("logo", form.logo);
+// //     if (editing) await axios.put(`${API_URL}/${editing._id}`, data);
+// //     else await axios.post(API_URL, data);
 
-// //       const url = editId ? `${BASE_URL}/politicians/${editId}` : `${BASE_URL}/politicians`;
-// //       const method = editId ? "put" : "post";
-
-// //       await axios[method](url, fd, { headers: { "Content-Type": "multipart/form-data" } });
-// //       fetchPoliticians();
-// //       handleClose();
-// //     } catch (err) {
-// //       console.error(err);
-// //       alert(err.response?.data?.message || "Error saving politician");
-// //     }
+// //     handleClose();
+// //     fetchData();
 // //   };
 
 // //   const handleDelete = async (id) => {
-// //     if (!window.confirm("Delete this politician?")) return;
-// //     try {
-// //       await axios.delete(`${BASE_URL}/politicians/${id}`);
-// //       fetchPoliticians();
-// //     } catch (err) { console.error(err); alert("Failed to delete"); }
+// //     if (window.confirm("Delete this politician?")) {
+// //       await axios.delete(`${API_URL}/${id}`);
+// //       fetchData();
+// //     }
+// //   };
+
+// //   const handleEdit = (item) => {
+// //     setEditing(item);
+// //     setFormData({
+// //       title: item.title,
+// //       abbreviation: item.abbreviation,
+// //       status: item.status,
+// //       religious: item.religious?._id || "",
+// //       language: item.language?._id || "",
+// //       file: null,
+// //       preview: item.logo || "",
+// //     });
+// //     setShowModal(true);
+// //   };
+
+// //   const handleClose = () => {
+// //     setShowModal(false);
+// //     setEditing(null);
+// //     setFormData({
+// //       title: "",
+// //       abbreviation: "",
+// //       status: "active",
+// //       religious: "",
+// //       language: "",
+// //       file: null,
+// //       preview: "",
+// //     });
 // //   };
 
 // //   return (
-// //     <Container fluid>
-// //       <div className="d-flex justify-content-between align-items-center mb-4">
-// //         <h2>Politicians Management</h2>
-// //         <Button variant="primary" onClick={() => handleShow()}>
-// //           <FaPlus className="me-2" /> Add Politician
+// //     <div className="p-4">
+// //       <div className="d-flex justify-content-between align-items-center mb-3">
+// //         <h4>Politician List</h4>
+// //         <Button onClick={() => setShowModal(true)}>
+// //           <FaPlus /> Add Politician
 // //         </Button>
 // //       </div>
 
-// //       <Card>
-// //         <Card.Body>
-// //           <Table responsive hover>
-// //             <thead>
-// //               <tr>
-// //                 <th>Title</th>
-// //                 <th>Abbreviation</th>
-// //                 <th>Logo</th>
-// //                 <th>Status</th>
-// //                 <th>Actions</th>
+// //       <Table bordered hover>
+// //         <thead>
+// //           <tr>
+// //             <th>#</th>
+// //             <th>Logo</th>
+// //             <th>Title</th>
+// //             <th>Abbreviation</th>
+// //             <th>Status</th>
+// //             <th>Religion</th>
+// //             <th>Language</th>
+// //             <th>Actions</th>
+// //           </tr>
+// //         </thead>
+// //         <tbody>
+// //           {politicians.length ? (
+// //             politicians.map((p, i) => (
+// //               <tr key={p._id}>
+// //                 <td>{i + 1}</td>
+// //                 <td>
+// //                   {p.logo ? (
+// //                     <Image src={p.logo} rounded width="60" height="60" />
+// //                   ) : (
+// //                     "No Image"
+// //                   )}
+// //                 </td>
+// //                 <td>{p.title}</td>
+// //                 <td>{p.abbreviation}</td>
+// //                 <td>{p.status}</td>
+// //                 <td>{p.religious?.title || "—"}</td>
+// //                 <td>{p.language?.name || "—"}</td>
+// //                 <td>
+// //                   <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
+// //                     <FaEdit />
+// //                   </Button>{" "}
+// //                   <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
+// //                     <FaTrash />
+// //                   </Button>
+// //                 </td>
 // //               </tr>
-// //             </thead>
-// //             <tbody>
-// //               {politicians.map(p => (
-// //                 <tr key={p._id}>
-// //                   <td>{p.title}</td>
-// //                   <td>{p.abbreviation}</td>
-// //                   <td>{p.logo && <img src={p.logo} alt="logo" style={{ height:50 }} />}</td>
-// //                   <td><Badge bg={p.status==="active"?"success":"secondary"}>{p.status}</Badge></td>
-// //                   <td>
-// //                     <Button variant="outline-primary" size="sm" className="me-2" onClick={()=>handleShow(p)}><FaEdit/></Button>
-// //                     <Button variant="outline-danger" size="sm" onClick={()=>handleDelete(p._id)}><FaTrash/></Button>
-// //                   </td>
-// //                 </tr>
-// //               ))}
-// //             </tbody>
-// //           </Table>
-// //         </Card.Body>
-// //       </Card>
+// //             ))
+// //           ) : (
+// //             <tr>
+// //               <td colSpan="8" className="text-center">
+// //                 No Data Found
+// //               </td>
+// //             </tr>
+// //           )}
+// //         </tbody>
+// //       </Table>
 
-// //       <Modal show={show} onHide={handleClose} size="md">
+// //       {/* Add/Edit Modal */}
+// //       <Modal show={showModal} onHide={handleClose} centered>
 // //         <Modal.Header closeButton>
-// //           <Modal.Title>{editId ? "Edit Politician" : "Add Politician"}</Modal.Title>
+// //           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
 // //         </Modal.Header>
 // //         <Modal.Body>
-// //           <Form>
-// //             <Form.Group className="mb-3">
+// //           <Form onSubmit={handleSubmit}>
+// //             <Form.Group className="mb-2">
 // //               <Form.Label>Title</Form.Label>
-// //               <Form.Control name="title" value={form.title} onChange={handleChange} />
+// //               <Form.Control
+// //                 type="text"
+// //                 name="title"
+// //                 value={formData.title}
+// //                 onChange={handleChange}
+// //               />
 // //             </Form.Group>
-// //             <Form.Group className="mb-3">
+
+// //             <Form.Group className="mb-2">
 // //               <Form.Label>Abbreviation</Form.Label>
-// //               <Form.Control name="abbreviation" value={form.abbreviation} onChange={handleChange} />
+// //               <Form.Control
+// //                 type="text"
+// //                 name="abbreviation"
+// //                 value={formData.abbreviation}
+// //                 onChange={handleChange}
+// //               />
 // //             </Form.Group>
-// //             <Form.Group className="mb-3">
-// //               <Form.Label>Logo</Form.Label>
-// //               <Form.Control type="file" name="logo" onChange={handleChange} />
-// //               {filePreview && <img src={filePreview} alt="logo-preview" style={{ maxWidth:"100%", maxHeight:"150px", marginTop:"10px" }}/>}
-// //             </Form.Group>
-// //             <Form.Group className="mb-3">
+
+// //             <Form.Group className="mb-2">
 // //               <Form.Label>Status</Form.Label>
-// //               <Form.Select name="status" value={form.status} onChange={handleChange}>
+// //               <Form.Select name="status" value={formData.status} onChange={handleChange}>
 // //                 <option value="active">Active</option>
 // //                 <option value="inactive">Inactive</option>
 // //               </Form.Select>
 // //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Religious</Form.Label>
+// //               <Form.Select
+// //                 name="religious"
+// //                 value={formData.religious}
+// //                 onChange={handleChange}
+// //               >
+// //                 <option value="">Select Religious</option>
+// //                 {religiousList.map((r) => (
+// //                   <option key={r._id} value={r._id}>
+// //                     {r.title}
+// //                   </option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Language</Form.Label>
+// //               <Form.Select
+// //                 name="language"
+// //                 value={formData.language}
+// //                 onChange={handleChange}
+// //               >
+// //                 <option value="">Select Language</option>
+// //                 {languageList.map((l) => (
+// //                   <option key={l._id} value={l._id}>
+// //                     {l.name}
+// //                   </option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-3">
+// //               <Form.Label>Upload Logo</Form.Label>
+// //               <Form.Control type="file" name="file" onChange={handleChange} />
+// //               {formData.preview && (
+// //                 <div className="text-center mt-2">
+// //                   <Image src={formData.preview} width="100" height="100" rounded />
+// //                 </div>
+// //               )}
+// //             </Form.Group>
+
+// //             <Button type="submit" className="w-100" variant="primary">
+// //               {editing ? "Update" : "Save"}
+// //             </Button>
 // //           </Form>
 // //         </Modal.Body>
-// //         <Modal.Footer>
-// //           <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-// //           <Button variant="primary" onClick={handleSubmit}>Save</Button>
-// //         </Modal.Footer>
 // //       </Modal>
-// //     </Container>
+// //     </div>
 // //   );
 // // };
 
-
-// // export default Politician;
-
+// // export default PoliticianManager;
 
 
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { Button, Modal, Form, Table, Image } from "react-bootstrap";
-// import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
-// const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
-// const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
-// const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
+// // import React, { useEffect, useState } from "react";
+// // import axios from "axios";
+// // import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// // import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 
-// const PoliticianManager = () => {
-//   const [politicians, setPoliticians] = useState([]);
-//   const [religiousList, setReligiousList] = useState([]);
-//   const [languageList, setLanguageList] = useState([]);
-//   const [showModal, setShowModal] = useState(false);
-//   const [editing, setEditing] = useState(null);
-//   const [formData, setFormData] = useState({
-//     title: "",
-//     abbreviation: "",
-//     status: "active",
-//     religious: "",
-//     language: "",
-//     file: null,
-//     preview: "",
-//   });
+// // const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
+// // const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
+// // const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
 
-//   // Fetch data
-//   const fetchData = async () => {
-//     const [polRes, relRes, langRes] = await Promise.all([
-//       axios.get(API_URL),
-//       axios.get(RELIGIOUS_API),
-//       axios.get(LANGUAGE_API),
-//     ]);
-//     setPoliticians(polRes.data.politicians || []);
-//     setReligiousList(relRes.data.religiousList || relRes.data);
-//     setLanguageList(langRes.data || []);
-//   };
+// // const PoliticianManager = () => {
+// //   const [politicians, setPoliticians] = useState([]);
+// //   const [religiousList, setReligiousList] = useState([]);
+// //   const [languageList, setLanguageList] = useState([]);
 
-//   useEffect(() => {
-//     fetchData();
-//   }, []);
+// //   const [showModal, setShowModal] = useState(false);
+// //   const [editing, setEditing] = useState(null);
 
-//   const handleChange = (e) => {
-//     const { name, value, files } = e.target;
-//     if (files?.length) {
-//       const file = files[0];
-//       setFormData({ ...formData, file, preview: URL.createObjectURL(file) });
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
+// //   const [search, setSearch] = useState("");
+// //   const [page, setPage] = useState(1);
+// //   const limit = 5;
+// //   const [totalPages, setTotalPages] = useState(1);
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const data = new FormData();
-//     Object.entries(formData).forEach(([k, v]) => {
-//       if (v && k !== "preview") data.append(k, v);
-//     });
+// //   const [formData, setFormData] = useState({
+// //     title: "",
+// //     abbreviation: "",
+// //     status: "active",
+// //     religious: "",
+// //     language: "",
+// //     logo: null,
+// //     preview: "",
+// //   });
 
-//     if (editing) await axios.put(`${API_URL}/${editing._id}`, data);
-//     else await axios.post(API_URL, data);
+// //   // Fetch data
+// //   const fetchData = async () => {
+// //     const polRes = await axios.get(API_URL, {
+// //       params: { search, page, limit }
+// //     });
 
-//     handleClose();
-//     fetchData();
-//   };
+// //     const relRes = await axios.get(RELIGIOUS_API);
+// //     const langRes = await axios.get(LANGUAGE_API);
 
-//   const handleDelete = async (id) => {
-//     if (window.confirm("Delete this politician?")) {
-//       await axios.delete(`${API_URL}/${id}`);
-//       fetchData();
-//     }
-//   };
+// //     setPoliticians(polRes.data.politicians);
+// //     setTotalPages(polRes.data.pages);
 
-//   const handleEdit = (item) => {
-//     setEditing(item);
-//     setFormData({
-//       title: item.title,
-//       abbreviation: item.abbreviation,
-//       status: item.status,
-//       religious: item.religious?._id || "",
-//       language: item.language?._id || "",
-//       file: null,
-//       preview: item.logo || "",
-//     });
-//     setShowModal(true);
-//   };
+// //     setReligiousList(relRes.data.religiousList || relRes.data);
+// //     setLanguageList(langRes.data);
+// //   };
 
-//   const handleClose = () => {
-//     setShowModal(false);
-//     setEditing(null);
-//     setFormData({
-//       title: "",
-//       abbreviation: "",
-//       status: "active",
-//       religious: "",
-//       language: "",
-//       file: null,
-//       preview: "",
-//     });
-//   };
+// //   useEffect(() => {
+// //     fetchData();
+// //   }, [page, search]);
 
-//   return (
-//     <div className="p-4">
-//       <div className="d-flex justify-content-between align-items-center mb-3">
-//         <h4>Politician List</h4>
-//         <Button onClick={() => setShowModal(true)}>
-//           <FaPlus /> Add Politician
-//         </Button>
-//       </div>
+// //   const handleChange = (e) => {
+// //     const { name, value, files } = e.target;
 
-//       <Table bordered hover>
-//         <thead>
-//           <tr>
-//             <th>#</th>
-//             <th>Logo</th>
-//             <th>Title</th>
-//             <th>Abbreviation</th>
-//             <th>Status</th>
-//             <th>Religion</th>
-//             <th>Language</th>
-//             <th>Actions</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {politicians.length ? (
-//             politicians.map((p, i) => (
-//               <tr key={p._id}>
-//                 <td>{i + 1}</td>
-//                 <td>
-//                   {p.logo ? (
-//                     <Image src={p.logo} rounded width="60" height="60" />
-//                   ) : (
-//                     "No Image"
-//                   )}
-//                 </td>
-//                 <td>{p.title}</td>
-//                 <td>{p.abbreviation}</td>
-//                 <td>{p.status}</td>
-//                 <td>{p.religious?.title || "—"}</td>
-//                 <td>{p.language?.name || "—"}</td>
-//                 <td>
-//                   <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
-//                     <FaEdit />
-//                   </Button>{" "}
-//                   <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
-//                     <FaTrash />
-//                   </Button>
-//                 </td>
-//               </tr>
-//             ))
-//           ) : (
-//             <tr>
-//               <td colSpan="8" className="text-center">
-//                 No Data Found
-//               </td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </Table>
+// //     if (files?.length) {
+// //       const file = files[0];
+// //       setFormData({
+// //         ...formData,
+// //         logo: file,
+// //         preview: URL.createObjectURL(file),
+// //       });
+// //     } else {
+// //       setFormData({ ...formData, [name]: value });
+// //     }
+// //   };
 
-//       {/* Add/Edit Modal */}
-//       <Modal show={showModal} onHide={handleClose} centered>
-//         <Modal.Header closeButton>
-//           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
-//         </Modal.Header>
-//         <Modal.Body>
-//           <Form onSubmit={handleSubmit}>
-//             <Form.Group className="mb-2">
-//               <Form.Label>Title</Form.Label>
-//               <Form.Control
-//                 type="text"
-//                 name="title"
-//                 value={formData.title}
-//                 onChange={handleChange}
-//               />
-//             </Form.Group>
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
 
-//             <Form.Group className="mb-2">
-//               <Form.Label>Abbreviation</Form.Label>
-//               <Form.Control
-//                 type="text"
-//                 name="abbreviation"
-//                 value={formData.abbreviation}
-//                 onChange={handleChange}
-//               />
-//             </Form.Group>
+// //     const data = new FormData();
 
-//             <Form.Group className="mb-2">
-//               <Form.Label>Status</Form.Label>
-//               <Form.Select name="status" value={formData.status} onChange={handleChange}>
-//                 <option value="active">Active</option>
-//                 <option value="inactive">Inactive</option>
-//               </Form.Select>
-//             </Form.Group>
+// //     data.append("title", formData.title);
+// //     data.append("abbreviation", formData.abbreviation);
+// //     data.append("status", formData.status);
+// //     data.append("religious", formData.religious);
+// //     data.append("language", formData.language);
 
-//             <Form.Group className="mb-2">
-//               <Form.Label>Religious</Form.Label>
-//               <Form.Select
-//                 name="religious"
-//                 value={formData.religious}
-//                 onChange={handleChange}
-//               >
-//                 <option value="">Select Religious</option>
-//                 {religiousList.map((r) => (
-//                   <option key={r._id} value={r._id}>
-//                     {r.title}
-//                   </option>
-//                 ))}
-//               </Form.Select>
-//             </Form.Group>
+// //     if (formData.logo) {
+// //       data.append("logo", formData.logo, formData.logo.name); // FIXED
+// //     }
 
-//             <Form.Group className="mb-2">
-//               <Form.Label>Language</Form.Label>
-//               <Form.Select
-//                 name="language"
-//                 value={formData.language}
-//                 onChange={handleChange}
-//               >
-//                 <option value="">Select Language</option>
-//                 {languageList.map((l) => (
-//                   <option key={l._id} value={l._id}>
-//                     {l.name}
-//                   </option>
-//                 ))}
-//               </Form.Select>
-//             </Form.Group>
+// //     if (editing) {
+// //       await axios.put(`${API_URL}/${editing._id}`, data);
+// //     } else {
+// //       await axios.post(API_URL, data);
+// //     }
 
-//             <Form.Group className="mb-3">
-//               <Form.Label>Upload Logo</Form.Label>
-//               <Form.Control type="file" name="file" onChange={handleChange} />
-//               {formData.preview && (
-//                 <div className="text-center mt-2">
-//                   <Image src={formData.preview} width="100" height="100" rounded />
-//                 </div>
-//               )}
-//             </Form.Group>
+// //     handleClose();
+// //     fetchData();
+// //   };
 
-//             <Button type="submit" className="w-100" variant="primary">
-//               {editing ? "Update" : "Save"}
-//             </Button>
-//           </Form>
-//         </Modal.Body>
-//       </Modal>
-//     </div>
-//   );
-// };
+// //   const handleDelete = async (id) => {
+// //     if (window.confirm("Delete this politician?")) {
+// //       await axios.delete(`${API_URL}/${id}`);
+// //       fetchData();
+// //     }
+// //   };
 
-// export default PoliticianManager;
+// //   const handleEdit = (item) => {
+// //     setEditing(item);
+// //     setFormData({
+// //       title: item.title,
+// //       abbreviation: item.abbreviation,
+// //       status: item.status,
+// //       religious: item.religious?._id || "",
+// //       language: item.language?._id || "",
+// //       logo: null,
+// //       preview: item.logo || "",
+// //     });
+// //     setShowModal(true);
+// //   };
+
+// //   const handleClose = () => {
+// //     setEditing(null);
+// //     setFormData({
+// //       title: "",
+// //       abbreviation: "",
+// //       status: "active",
+// //       religious: "",
+// //       language: "",
+// //       logo: null,
+// //       preview: "",
+// //     });
+// //     setShowModal(false);
+// //   };
+
+// //   return (
+// //     <div className="p-4">
+// //       <div className="d-flex justify-content-between align-items-center mb-3">
+// //         <h4>Politician List</h4>
+// //         <Button onClick={() => setShowModal(true)}>
+// //           <FaPlus /> Add Politician
+// //         </Button>
+// //       </div>
+
+// //       {/* Search Bar */}
+// //       <input
+// //         type="text"
+// //         className="form-control mb-3"
+// //         placeholder="Search politician..."
+// //         value={search}
+// //         onChange={(e) => {
+// //           setSearch(e.target.value);
+// //           setPage(1);
+// //         }}
+// //       />
+
+// //       <Table bordered hover>
+// //         <thead>
+// //           <tr>
+// //             <th>#</th>
+// //             <th>Logo</th>
+// //             <th>Title</th>
+// //             <th>Abbreviation</th>
+// //             <th>Status</th>
+// //             <th>Religion</th>
+// //             <th>Language</th>
+// //             <th>Actions</th>
+// //           </tr>
+// //         </thead>
+// //         <tbody>
+// //           {politicians.length ? (
+// //             politicians.map((p, i) => (
+// //               <tr key={p._id}>
+// //                 <td>{(page - 1) * limit + i + 1}</td>
+// //                 <td>
+// //                   {p.logo ? (
+// //                     <Image src={p.logo} width="60" height="60" rounded />
+// //                   ) : ("No Image")}
+// //                 </td>
+// //                 <td>{p.title}</td>
+// //                 <td>{p.abbreviation}</td>
+// //                 <td>{p.status}</td>
+// //                 <td>{p.religious?.title || "—"}</td>
+// //                 <td>{p.language?.name || "—"}</td>
+// //                 <td>
+// //                   <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
+// //                     <FaEdit />
+// //                   </Button>{" "}
+// //                   <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
+// //                     <FaTrash />
+// //                   </Button>
+// //                 </td>
+// //               </tr>
+// //             ))
+// //           ) : (
+// //             <tr>
+// //               <td colSpan="8" className="text-center">No Data Found</td>
+// //             </tr>
+// //           )}
+// //         </tbody>
+// //       </Table>
+
+// //       {/* Pagination */}
+// //       <div className="d-flex justify-content-center gap-2">
+// //         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
+// //           Prev
+// //         </Button>
+
+// //         <span className="px-3 py-1 border rounded">
+// //           Page {page} / {totalPages}
+// //         </span>
+
+// //         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+// //           Next
+// //         </Button>
+// //       </div>
+
+// //       {/* Add/Edit Modal */}
+// //       <Modal show={showModal} onHide={handleClose} centered>
+// //         <Modal.Header closeButton>
+// //           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
+// //         </Modal.Header>
+
+// //         <Modal.Body>
+// //           <Form onSubmit={handleSubmit}>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Title</Form.Label>
+// //               <Form.Control
+// //                 type="text"
+// //                 name="title"
+// //                 value={formData.title}
+// //                 onChange={handleChange}
+// //               />
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Abbreviation</Form.Label>
+// //               <Form.Control
+// //                 type="text"
+// //                 name="abbreviation"
+// //                 value={formData.abbreviation}
+// //                 onChange={handleChange}
+// //               />
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Status</Form.Label>
+// //               <Form.Select name="status" value={formData.status} onChange={handleChange}>
+// //                 <option value="active">Active</option>
+// //                 <option value="inactive">Inactive</option>
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Religious</Form.Label>
+// //               <Form.Select name="religious" value={formData.religious} onChange={handleChange}>
+// //                 <option value="">Select Religious</option>
+// //                 {religiousList.map((r) => (
+// //                   <option key={r._id} value={r._id}>{r.title}</option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Language</Form.Label>
+// //               <Form.Select name="language" value={formData.language} onChange={handleChange}>
+// //                 <option value="">Select Language</option>
+// //                 {languageList.map((l) => (
+// //                   <option key={l._id} value={l._id}>{l.name}</option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-3">
+// //               <Form.Label>Upload Logo</Form.Label>
+// //               <Form.Control type="file" name="logo" onChange={handleChange} />
+
+// //               {formData.preview && (
+// //                 <div className="text-center mt-2">
+// //                   <Image src={formData.preview} width="100" height="100" rounded />
+// //                 </div>
+// //               )}
+// //             </Form.Group>
+
+// //             <Button type="submit" className="w-100" variant="primary">
+// //               {editing ? "Update" : "Save"}
+// //             </Button>
+
+// //           </Form>
+// //         </Modal.Body>
+
+// //       </Modal>
+// //     </div>
+// //   );
+// // };
+
+// // export default PoliticianManager;
+
+// // import React, { useEffect, useState } from "react";
+// // import axios from "axios";
+// // import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// // import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// // const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
+// // const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
+// // const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
+
+// // const PoliticianManager = () => {
+// //   const [politicians, setPoliticians] = useState([]);
+// //   const [religiousList, setReligiousList] = useState([]);
+// //   const [languageList, setLanguageList] = useState([]);
+
+// //   const [showModal, setShowModal] = useState(false);
+// //   const [editing, setEditing] = useState(null);
+
+// //   const [search, setSearch] = useState("");
+// //   const [page, setPage] = useState(1);
+// //   const limit = 5;
+// //   const [totalPages, setTotalPages] = useState(1);
+
+// //   const [formData, setFormData] = useState({
+// //     title: "",
+// //     abbreviation: "",
+// //     status: "active",
+// //     religious: "",
+// //     language: "",
+
+// //     logo: null,
+// //     preview: "",
+
+// //     banner: null,
+// //     bannerPreview: "",
+
+// //     zoom: 1,
+// //     offsetX: 0,
+// //     offsetY: 0,
+
+// //     bannerZoom: 1,
+// //     bannerX: 0,
+// //     bannerY: 0,
+// //   });
+
+// //   // Fetch Data
+// //   const fetchData = async () => {
+// //     const polRes = await axios.get(API_URL, { params: { search, page, limit } });
+// //     const relRes = await axios.get(RELIGIOUS_API);
+// //     const langRes = await axios.get(LANGUAGE_API);
+
+// //     setPoliticians(polRes.data.politicians);
+// //     setTotalPages(polRes.data.pages);
+
+// //     setReligiousList(relRes.data.religiousList || relRes.data);
+// //     setLanguageList(langRes.data);
+// //   };
+
+// //   useEffect(() => {
+// //     fetchData();
+// //   }, [page, search]);
+
+// //   // Handle Input & File Uploads
+// //   const handleChange = (e) => {
+// //     const { name, value, files } = e.target;
+
+// //     // LOGO upload
+// //     if (name === "logo" && files?.length) {
+// //       const file = files[0];
+// //       setFormData({
+// //         ...formData,
+// //         logo: file,
+// //         preview: URL.createObjectURL(file),
+// //       });
+// //       return;
+// //     }
+
+// //     // BANNER upload
+// //     if (name === "banner" && files?.length) {
+// //       const file = files[0];
+// //       setFormData({
+// //         ...formData,
+// //         banner: file,
+// //         bannerPreview: URL.createObjectURL(file),
+// //       });
+// //       return;
+// //     }
+
+// //     setFormData({ ...formData, [name]: value });
+// //   };
+
+// //   // Submit Form
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
+
+// //     const data = new FormData();
+// //     Object.keys(formData).forEach((key) => {
+// //       if (key === "logo" || key === "banner") return;
+// //       data.append(key, formData[key]);
+// //     });
+
+// //     if (formData.logo) data.append("logo", formData.logo);
+// //     if (formData.banner) data.append("banner", formData.banner);
+
+// //     if (editing) {
+// //       await axios.put(`${API_URL}/${editing._id}`, data);
+// //     } else {
+// //       await axios.post(API_URL, data);
+// //     }
+
+// //     handleClose();
+// //     fetchData();
+// //   };
+
+// //   const handleDelete = async (id) => {
+// //     if (window.confirm("Delete this politician?")) {
+// //       await axios.delete(`${API_URL}/${id}`);
+// //       fetchData();
+// //     }
+// //   };
+
+// //   const handleEdit = (item) => {
+// //     setEditing(item);
+
+// //     setFormData({
+// //       title: item.title,
+// //       abbreviation: item.abbreviation,
+// //       status: item.status,
+// //       religious: item.religious?._id || "",
+// //       language: item.language?._id || "",
+
+// //       logo: null,
+// //       preview: item.logo || "",
+
+// //       banner: null,
+// //       bannerPreview: item.banner || "",
+
+// //       zoom: item.zoom || 1,
+// //       offsetX: item.offsetX || 0,
+// //       offsetY: item.offsetY || 0,
+
+// //       bannerZoom: item.bannerZoom || 1,
+// //       bannerX: item.bannerX || 0,
+// //       bannerY: item.bannerY || 0,
+// //     });
+
+// //     setShowModal(true);
+// //   };
+
+// //   const handleClose = () => {
+// //     setEditing(null);
+// //     setFormData({
+// //       title: "",
+// //       abbreviation: "",
+// //       status: "active",
+// //       religious: "",
+// //       language: "",
+
+// //       logo: null,
+// //       preview: "",
+// //       banner: null,
+// //       bannerPreview: "",
+
+// //       zoom: 1,
+// //       offsetX: 0,
+// //       offsetY: 0,
+
+// //       bannerZoom: 1,
+// //       bannerX: 0,
+// //       bannerY: 0,
+// //     });
+// //     setShowModal(false);
+// //   };
+
+// //   return (
+// //     <div className="p-4">
+// //       {/* HEADER */}
+// //       <div className="d-flex justify-content-between mb-3">
+// //         <h4>Politician Manager</h4>
+// //         <Button onClick={() => setShowModal(true)}>
+// //           <FaPlus /> Add Politician
+// //         </Button>
+// //       </div>
+
+// //       {/* SEARCH */}
+// //       <input
+// //         type="text"
+// //         className="form-control mb-3"
+// //         placeholder="Search politician..."
+// //         value={search}
+// //         onChange={(e) => {
+// //           setSearch(e.target.value);
+// //           setPage(1);
+// //         }}
+// //       />
+
+// //       {/* TABLE */}
+// //       <Table bordered hover>
+// //         <thead>
+// //           <tr>
+// //             <th>#</th>
+// //             <th>Logo</th>
+// //             <th>Banner</th>
+// //             <th>Title</th>
+// //             <th>Abbreviation</th>
+// //             <th>Status</th>
+// //             <th>Religious</th>
+// //             <th>Language</th>
+// //             <th>Actions</th>
+// //           </tr>
+// //         </thead>
+
+// //         <tbody>
+// //           {politicians.map((p, i) => (
+// //             <tr key={p._id}>
+// //               <td>{(page - 1) * limit + i + 1}</td>
+// //               <td>{p.logo ? <Image width="60" src={p.logo} /> : "—"}</td>
+// //               <td>{p.banner ? <Image width="60" src={p.banner} /> : "—"}</td>
+// //               <td>{p.title}</td>
+// //               <td>{p.abbreviation}</td>
+// //               <td>{p.status}</td>
+// //               <td>{p.religious?.title || "—"}</td>
+// //               <td>{p.language?.name || "—"}</td>
+
+// //               <td>
+// //                 <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
+// //                   <FaEdit />
+// //                 </Button>{" "}
+// //                 <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
+// //                   <FaTrash />
+// //                 </Button>
+// //               </td>
+// //             </tr>
+// //           ))}
+// //         </tbody>
+// //       </Table>
+
+// //       {/* PAGINATION */}
+// //       <div className="d-flex justify-content-center gap-3 py-2">
+// //         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
+// //           Prev
+// //         </Button>
+// //         <span>
+// //           Page {page} / {totalPages}
+// //         </span>
+// //         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+// //           Next
+// //         </Button>
+// //       </div>
+
+// //       {/* MODAL */}
+// //       <Modal show={showModal} onHide={handleClose} centered size="lg">
+// //         <Modal.Header closeButton>
+// //           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
+// //         </Modal.Header>
+
+// //         <Modal.Body>
+// //           <Form onSubmit={handleSubmit}>
+
+// //             {/* BASIC FIELDS */}
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Title</Form.Label>
+// //               <Form.Control name="title" value={formData.title} onChange={handleChange} />
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Abbreviation</Form.Label>
+// //               <Form.Control name="abbreviation" value={formData.abbreviation} onChange={handleChange} />
+// //             </Form.Group>
+// //             {/* RELIGIOUS FIELD */}
+// // <Form.Group className="mb-2">
+// //   <Form.Label>Religious</Form.Label>
+// //   <Form.Select
+// //     name="religious"
+// //     value={formData.religious}
+// //     onChange={handleChange}
+// //   >
+// //     <option value="">Select Religious</option>
+// //     {religiousList.map((r) => (
+// //       <option key={r._id} value={r._id}>
+// //         {r.title}
+// //       </option>
+// //     ))}
+// //   </Form.Select>
+// // </Form.Group>
+
+// // {/* LANGUAGE FIELD */}
+// // <Form.Group className="mb-2">
+// //   <Form.Label>Language</Form.Label>
+// //   <Form.Select
+// //     name="language"
+// //     value={formData.language}
+// //     onChange={handleChange}
+// //   >
+// //     <option value="">Select Language</option>
+// //     {languageList.map((l) => (
+// //       <option key={l._id} value={l._id}>
+// //         {l.name}
+// //       </option>
+// //     ))}
+// //   </Form.Select>
+// // </Form.Group>
 
 
+// //             {/* UPLOAD ROW */}
+// //             <div className="row">
+// //               <div className="col-md-6">
+// //                 <Form.Group>
+// //                   <Form.Label>Logo Upload</Form.Label>
+// //                   <Form.Control type="file" name="logo" onChange={handleChange} />
+// //                 </Form.Group>
+// //               </div>
+
+// //               <div className="col-md-6">
+// //                 <Form.Group>
+// //                   <Form.Label>Banner Upload</Form.Label>
+// //                   <Form.Control type="file" name="banner" onChange={handleChange} />
+// //                 </Form.Group>
+// //               </div>
+// //             </div>
+
+// //             {/* ⭐ CRAFTO LIVE PREVIEW ⭐ */}
+// //       <div
+// //         style={{
+// //           width: 300,
+// //           height: 300,
+// //           position: "relative",
+// //           border: "1px dashed #999",
+// //           overflow: "hidden",
+// //           margin: "20px auto",
+// //           borderRadius: "12px",
+// //           background: "#f5f5f5",
+// //         }}
+// //       >
+
+// //         {/* BANNER */}
+// //         {formData.bannerPreview && (
+// //           <img
+// //             src={formData.bannerPreview}
+// //             alt="banner"
+// //             style={{
+// //               width: "100%",
+// //               height: "100%",
+// //               objectFit: "cover",
+// //               position: "absolute",
+// //               top: 0,
+// //               left: 0,
+// //               transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
+// //             }}
+// //           />
+// //         )}
+
+// //         {/* LOGO */}
+// //         {formData.preview && (
+// //           <div
+// //             style={{
+// //               width: 120,
+// //               height: 120,
+// //               position: "absolute",
+// //               top: "50%",
+// //               left: "50%",
+// //               transform: "translate(-50%, -50%)",
+// //               borderRadius: "50%",
+// //               overflow: "hidden",
+// //               border: "4px solid white",
+// //               background: "white",
+// //               boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+// //             }}
+// //           >
+// //             <img
+// //               src={formData.preview}
+// //               alt="logo"
+// //               style={{
+// //                 width: "100%",
+// //                 height: "100%",
+// //                 objectFit: "contain",
+// //                 transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
+// //               }}
+// //             />
+// //           </div>
+// //         )}
+// //       </div>
+
+// //             {/* LOGO CONTROLS */}
+// //             <hr />
+// //             <h6>Logo Controls</h6>
+
+// //             <Form.Label>Zoom: {formData.zoom}</Form.Label>
+// //             <Form.Range name="zoom" min="0.1" max="3" step="0.1"
+// //               value={formData.zoom} onChange={handleChange} />
+
+// //             <Form.Label>Move X: {formData.offsetX}px</Form.Label>
+// //             <Form.Range name="offsetX" min="-200" max="200"
+// //               value={formData.offsetX} onChange={handleChange} />
+
+// //             <Form.Label>Move Y: {formData.offsetY}px</Form.Label>
+// //             <Form.Range name="offsetY" min="-200" max="200"
+// //               value={formData.offsetY} onChange={handleChange} />
+
+// //             {/* BANNER CONTROLS */}
+// //             <hr />
+// //             <h6>Banner Controls</h6>
+
+// //             <Form.Label>Zoom: {formData.bannerZoom}</Form.Label>
+// //             <Form.Range name="bannerZoom" min="0.1" max="3" step="0.1"
+// //               value={formData.bannerZoom} onChange={handleChange} />
+
+// //             <Form.Label>Move X: {formData.bannerX}px</Form.Label>
+// //             <Form.Range name="bannerX" min="-200" max="200"
+// //               value={formData.bannerX} onChange={handleChange} />
+
+// //             <Form.Label>Move Y: {formData.bannerY}px</Form.Label>
+// //             <Form.Range name="bannerY" min="-200" max="200"
+// //               value={formData.bannerY} onChange={handleChange} />
+
+// //             <Button type="submit" className="w-100 mt-3" variant="primary">
+// //               {editing ? "Update" : "Save"}
+// //             </Button>
+
+// //           </Form>
+// //         </Modal.Body>
+
+// //       </Modal>
+// //     </div>
+// //   );
+// // };
+
+// // export default PoliticianManager;
+
+
+// // import React, { useEffect, useState } from "react";
+// // import axios from "axios";
+// // import { Button, Modal, Form, Table, Image } from "react-bootstrap";
+// // import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+
+// // const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
+// // const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
+// // const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
+
+// // const PoliticianManager = () => {
+// //   const [politicians, setPoliticians] = useState([]);
+// //   const [religiousList, setReligiousList] = useState([]);
+// //   const [languageList, setLanguageList] = useState([]);
+
+// //   const [showModal, setShowModal] = useState(false);
+// //   const [editing, setEditing] = useState(null);
+
+// //   const [search, setSearch] = useState("");
+// //   const [page, setPage] = useState(1);
+// //   const limit = 5;
+// //   const [totalPages, setTotalPages] = useState(1);
+
+// //   const [formData, setFormData] = useState({
+// //     title: "",
+// //     abbreviation: "",
+// //     status: "active",
+// //     religious: "",
+// //     language: "",
+
+// //     logo: null,
+// //     preview: "",
+
+// //     banner: null,
+// //     bannerPreview: "",
+
+// //     zoom: 1,
+// //     offsetX: 0,
+// //     offsetY: 0,
+
+// //     bannerZoom: 1,
+// //     bannerX: 0,
+// //     bannerY: 0,
+// //   });
+
+// //   // Fetch Data
+// //   const fetchData = async () => {
+// //     const polRes = await axios.get(API_URL, { params: { search, page, limit } });
+// //     const relRes = await axios.get(RELIGIOUS_API);
+// //     const langRes = await axios.get(LANGUAGE_API);
+
+// //     setPoliticians(polRes.data.politicians);
+// //     setTotalPages(polRes.data.pages);
+
+// //     setReligiousList(relRes.data.religiousList || relRes.data);
+// //     setLanguageList(langRes.data);
+// //   };
+
+// //   useEffect(() => {
+// //     fetchData();
+// //   }, [page, search]);
+
+// //   // Handle Input & File Upload
+// //   const handleChange = (e) => {
+// //     const { name, value, files } = e.target;
+
+// //     if (name === "logo" && files?.length) {
+// //       setFormData({
+// //         ...formData,
+// //         logo: files[0],
+// //         preview: URL.createObjectURL(files[0]),
+// //       });
+// //       return;
+// //     }
+
+// //     if (name === "banner" && files?.length) {
+// //       setFormData({
+// //         ...formData,
+// //         banner: files[0],
+// //         bannerPreview: URL.createObjectURL(files[0]),
+// //       });
+// //       return;
+// //     }
+
+// //     setFormData({ ...formData, [name]: value });
+// //   };
+
+// //   // Submit
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
+
+// //     const data = new FormData();
+// //     Object.keys(formData).forEach((key) => {
+// //       if (key !== "logo" && key !== "banner") {
+// //         data.append(key, formData[key]);
+// //       }
+// //     });
+
+// //     if (formData.logo) data.append("logo", formData.logo);
+// //     if (formData.banner) data.append("banner", formData.banner);
+
+// //     if (editing) {
+// //       await axios.put(`${API_URL}/${editing._id}`, data);
+// //     } else {
+// //       await axios.post(API_URL, data);
+// //     }
+
+// //     handleClose();
+// //     fetchData();
+// //   };
+
+// //   // Delete
+// //   const handleDelete = async (id) => {
+// //     if (window.confirm("Delete this politician?")) {
+// //       await axios.delete(`${API_URL}/${id}`);
+// //       fetchData();
+// //     }
+// //   };
+
+// //   // Edit
+// //   const handleEdit = (item) => {
+// //     setEditing(item);
+
+// //     setFormData({
+// //       title: item.title,
+// //       abbreviation: item.abbreviation,
+// //       status: item.status,
+// //       religious: item.religious?._id || "",
+// //       language: item.language?._id || "",
+
+// //       logo: null,
+// //       preview: item.logo || "",
+// //       banner: null,
+// //       bannerPreview: item.banner || "",
+
+// //       zoom: item.zoom || 1,
+// //       offsetX: item.offsetX || 0,
+// //       offsetY: item.offsetY || 0,
+
+// //       bannerZoom: item.bannerZoom || 1,
+// //       bannerX: item.bannerX || 0,
+// //       bannerY: item.bannerY || 0,
+// //     });
+
+// //     setShowModal(true);
+// //   };
+
+// //   // Reset Form
+// //   const handleClose = () => {
+// //     setEditing(null);
+// //     setFormData({
+// //       title: "",
+// //       abbreviation: "",
+// //       status: "active",
+// //       religious: "",
+// //       language: "",
+// //       logo: null,
+// //       preview: "",
+// //       banner: null,
+// //       bannerPreview: "",
+// //       zoom: 1,
+// //       offsetX: 0,
+// //       offsetY: 0,
+// //       bannerZoom: 1,
+// //       bannerX: 0,
+// //       bannerY: 0,
+// //     });
+// //     setShowModal(false);
+// //   };
+
+// //   return (
+// //     <div className="p-3">
+
+// //       {/* HEADER */}
+// //       <div className="d-flex flex-wrap justify-content-between gap-2 mb-3">
+// //         <h4>Politician Manager</h4>
+// //         <Button onClick={() => setShowModal(true)} className="d-flex align-items-center gap-2">
+// //           <FaPlus /> Add Politician
+// //         </Button>
+// //       </div>
+
+// //       {/* SEARCH */}
+// //       <input
+// //         type="text"
+// //         className="form-control mb-3"
+// //         placeholder="Search politician..."
+// //         value={search}
+// //         onChange={(e) => {
+// //           setSearch(e.target.value);
+// //           setPage(1);
+// //         }}
+// //       />
+
+// //       {/* RESPONSIVE TABLE WRAPPER */}
+// //       <div className="table-responsive">
+// //         <Table bordered hover>
+// //           <thead>
+// //             <tr>
+// //               <th>#</th>
+// //               <th>Logo</th>
+// //               <th>Banner</th>
+// //               <th>Title</th>
+// //               <th>Abbreviation</th>
+// //               <th>Status</th>
+// //               <th>Religious</th>
+// //               <th>Language</th>
+// //               <th>Actions</th>
+// //             </tr>
+// //           </thead>
+
+// //           <tbody>
+// //             {politicians.map((p, i) => (
+// //               <tr key={p._id}>
+// //                 <td>{(page - 1) * limit + i + 1}</td>
+// //                 <td>{p.logo ? <Image width="50" height="50" rounded src={p.logo} /> : "—"}</td>
+// //                 <td>{p.banner ? <Image width="60" height="40" src={p.banner} /> : "—"}</td>
+// //                 <td>{p.title}</td>
+// //                 <td>{p.abbreviation}</td>
+// //                 <td>{p.status}</td>
+// //                 <td>{p.religious?.title || "—"}</td>
+// //                 <td>{p.language?.name || "—"}</td>
+
+// //                 <td className="d-flex gap-2">
+// //                   <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
+// //                     <FaEdit />
+// //                   </Button>
+// //                   <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
+// //                     <FaTrash />
+// //                   </Button>
+// //                 </td>
+// //               </tr>
+// //             ))}
+// //           </tbody>
+// //         </Table>
+// //       </div>
+
+// //       {/* PAGINATION */}
+// //       <div className="d-flex justify-content-center align-items-center gap-3 py-3 flex-wrap">
+// //         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
+// //           Prev
+// //         </Button>
+// //         <span>
+// //           Page {page} / {totalPages}
+// //         </span>
+// //         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+// //           Next
+// //         </Button>
+// //       </div>
+
+// //       {/* MODAL */}
+// //       <Modal show={showModal} onHide={handleClose} centered size="lg">
+// //         <Modal.Header closeButton>
+// //           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
+// //         </Modal.Header>
+
+// //         <Modal.Body>
+// //           <Form onSubmit={handleSubmit}>
+
+// //             {/* INPUTS */}
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Title</Form.Label>
+// //               <Form.Control name="title" value={formData.title} onChange={handleChange} />
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Abbreviation</Form.Label>
+// //               <Form.Control name="abbreviation" value={formData.abbreviation} onChange={handleChange} />
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Religious</Form.Label>
+// //               <Form.Select name="religious" value={formData.religious} onChange={handleChange}>
+// //                 <option value="">Select Religious</option>
+// //                 {religiousList.map((r) => (
+// //                   <option key={r._id} value={r._id}>{r.title}</option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             <Form.Group className="mb-2">
+// //               <Form.Label>Language</Form.Label>
+// //               <Form.Select name="language" value={formData.language} onChange={handleChange}>
+// //                 <option value="">Select Language</option>
+// //                 {languageList.map((l) => (
+// //                   <option key={l._id} value={l._id}>{l.name}</option>
+// //                 ))}
+// //               </Form.Select>
+// //             </Form.Group>
+
+// //             {/* FILE INPUTS */}
+// //             <div className="row">
+// //               <div className="col-md-6 mb-2">
+// //                 <Form.Label>Logo Upload</Form.Label>
+// //                 <Form.Control type="file" name="logo" onChange={handleChange} />
+// //               </div>
+
+// //               <div className="col-md-6 mb-2">
+// //                 <Form.Label>Banner Upload</Form.Label>
+// //                 <Form.Control type="file" name="banner" onChange={handleChange} />
+// //               </div>
+// //             </div>
+
+// //             {/* PREVIEW BOX */}
+// //             <div
+// //               style={{
+// //                 width: "100%",
+// //                 maxWidth: 320,
+// //                 height: 320,
+// //                 margin: "20px auto",
+// //                 border: "1px dashed #aaa",
+// //                 borderRadius: 12,
+// //                 position: "relative",
+// //                 overflow: "hidden",
+// //                 background: "#eee",
+// //               }}
+// //             >
+// //               {formData.bannerPreview && (
+// //                 <img
+// //                   src={formData.bannerPreview}
+// //                   style={{
+// //                     width: "100%",
+// //                     height: "100%",
+// //                     objectFit: "cover",
+// //                     position: "absolute",
+// //                     transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
+// //                   }}
+// //                 />
+// //               )}
+
+// //               {formData.preview && (
+// //                 <div
+// //                   style={{
+// //                     width: 120,
+// //                     height: 120,
+// //                     borderRadius: "50%",
+// //                     overflow: "hidden",
+// //                     border: "4px solid white",
+// //                     position: "absolute",
+// //                     top: "50%",
+// //                     left: "50%",
+// //                     transform: "translate(-50%, -50%)",
+// //                   }}
+// //                 >
+// //                   <img
+// //                     src={formData.preview}
+// //                     style={{
+// //                       width: "100%",
+// //                       height: "100%",
+// //                       objectFit: "contain",
+// //                       transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
+// //                     }}
+// //                   />
+// //                 </div>
+// //               )}
+// //             </div>
+
+// //             {/* CONTROLS */}
+// //             <h6>Logo Controls</h6>
+
+// //             <Form.Label>Zoom</Form.Label>
+// //             <Form.Range name="zoom" min="0.2" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+
+// //             <Form.Label>Move X</Form.Label>
+// //             <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
+
+// //             <Form.Label>Move Y</Form.Label>
+// //             <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+
+// //             <hr />
+
+// //             <h6>Banner Controls</h6>
+
+// //             <Form.Label>Zoom</Form.Label>
+// //             <Form.Range name="bannerZoom" min="0.2" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
+
+// //             <Form.Label>Move X</Form.Label>
+// //             <Form.Range name="bannerX" min="-200" max="200" value={formData.bannerX} onChange={handleChange} />
+
+// //             <Form.Label>Move Y</Form.Label>
+// //             <Form.Range name="bannerY" min="-200" max="200" value={formData.bannerY} onChange={handleChange} />
+
+// //             <Button type="submit" className="w-100 mt-3" variant="primary">
+// //               {editing ? "Update" : "Save"}
+// //             </Button>
+
+// //           </Form>
+// //         </Modal.Body>
+// //       </Modal>
+// //     </div>
+// //   );
+// // };
+
+// // export default PoliticianManager;
 
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
@@ -439,298 +1552,8 @@
 //     status: "active",
 //     religious: "",
 //     language: "",
-//     logo: null,
-//     preview: "",
-//   });
 
-//   // Fetch data
-//   const fetchData = async () => {
-//     const polRes = await axios.get(API_URL, {
-//       params: { search, page, limit }
-//     });
-
-//     const relRes = await axios.get(RELIGIOUS_API);
-//     const langRes = await axios.get(LANGUAGE_API);
-
-//     setPoliticians(polRes.data.politicians);
-//     setTotalPages(polRes.data.pages);
-
-//     setReligiousList(relRes.data.religiousList || relRes.data);
-//     setLanguageList(langRes.data);
-//   };
-
-//   useEffect(() => {
-//     fetchData();
-//   }, [page, search]);
-
-//   const handleChange = (e) => {
-//     const { name, value, files } = e.target;
-
-//     if (files?.length) {
-//       const file = files[0];
-//       setFormData({
-//         ...formData,
-//         logo: file,
-//         preview: URL.createObjectURL(file),
-//       });
-//     } else {
-//       setFormData({ ...formData, [name]: value });
-//     }
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     const data = new FormData();
-
-//     data.append("title", formData.title);
-//     data.append("abbreviation", formData.abbreviation);
-//     data.append("status", formData.status);
-//     data.append("religious", formData.religious);
-//     data.append("language", formData.language);
-
-//     if (formData.logo) {
-//       data.append("logo", formData.logo, formData.logo.name); // FIXED
-//     }
-
-//     if (editing) {
-//       await axios.put(`${API_URL}/${editing._id}`, data);
-//     } else {
-//       await axios.post(API_URL, data);
-//     }
-
-//     handleClose();
-//     fetchData();
-//   };
-
-//   const handleDelete = async (id) => {
-//     if (window.confirm("Delete this politician?")) {
-//       await axios.delete(`${API_URL}/${id}`);
-//       fetchData();
-//     }
-//   };
-
-//   const handleEdit = (item) => {
-//     setEditing(item);
-//     setFormData({
-//       title: item.title,
-//       abbreviation: item.abbreviation,
-//       status: item.status,
-//       religious: item.religious?._id || "",
-//       language: item.language?._id || "",
-//       logo: null,
-//       preview: item.logo || "",
-//     });
-//     setShowModal(true);
-//   };
-
-//   const handleClose = () => {
-//     setEditing(null);
-//     setFormData({
-//       title: "",
-//       abbreviation: "",
-//       status: "active",
-//       religious: "",
-//       language: "",
-//       logo: null,
-//       preview: "",
-//     });
-//     setShowModal(false);
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <div className="d-flex justify-content-between align-items-center mb-3">
-//         <h4>Politician List</h4>
-//         <Button onClick={() => setShowModal(true)}>
-//           <FaPlus /> Add Politician
-//         </Button>
-//       </div>
-
-//       {/* Search Bar */}
-//       <input
-//         type="text"
-//         className="form-control mb-3"
-//         placeholder="Search politician..."
-//         value={search}
-//         onChange={(e) => {
-//           setSearch(e.target.value);
-//           setPage(1);
-//         }}
-//       />
-
-//       <Table bordered hover>
-//         <thead>
-//           <tr>
-//             <th>#</th>
-//             <th>Logo</th>
-//             <th>Title</th>
-//             <th>Abbreviation</th>
-//             <th>Status</th>
-//             <th>Religion</th>
-//             <th>Language</th>
-//             <th>Actions</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {politicians.length ? (
-//             politicians.map((p, i) => (
-//               <tr key={p._id}>
-//                 <td>{(page - 1) * limit + i + 1}</td>
-//                 <td>
-//                   {p.logo ? (
-//                     <Image src={p.logo} width="60" height="60" rounded />
-//                   ) : ("No Image")}
-//                 </td>
-//                 <td>{p.title}</td>
-//                 <td>{p.abbreviation}</td>
-//                 <td>{p.status}</td>
-//                 <td>{p.religious?.title || "—"}</td>
-//                 <td>{p.language?.name || "—"}</td>
-//                 <td>
-//                   <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
-//                     <FaEdit />
-//                   </Button>{" "}
-//                   <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
-//                     <FaTrash />
-//                   </Button>
-//                 </td>
-//               </tr>
-//             ))
-//           ) : (
-//             <tr>
-//               <td colSpan="8" className="text-center">No Data Found</td>
-//             </tr>
-//           )}
-//         </tbody>
-//       </Table>
-
-//       {/* Pagination */}
-//       <div className="d-flex justify-content-center gap-2">
-//         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-//           Prev
-//         </Button>
-
-//         <span className="px-3 py-1 border rounded">
-//           Page {page} / {totalPages}
-//         </span>
-
-//         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
-//           Next
-//         </Button>
-//       </div>
-
-//       {/* Add/Edit Modal */}
-//       <Modal show={showModal} onHide={handleClose} centered>
-//         <Modal.Header closeButton>
-//           <Modal.Title>{editing ? "Edit Politician" : "Add Politician"}</Modal.Title>
-//         </Modal.Header>
-
-//         <Modal.Body>
-//           <Form onSubmit={handleSubmit}>
-
-//             <Form.Group className="mb-2">
-//               <Form.Label>Title</Form.Label>
-//               <Form.Control
-//                 type="text"
-//                 name="title"
-//                 value={formData.title}
-//                 onChange={handleChange}
-//               />
-//             </Form.Group>
-
-//             <Form.Group className="mb-2">
-//               <Form.Label>Abbreviation</Form.Label>
-//               <Form.Control
-//                 type="text"
-//                 name="abbreviation"
-//                 value={formData.abbreviation}
-//                 onChange={handleChange}
-//               />
-//             </Form.Group>
-
-//             <Form.Group className="mb-2">
-//               <Form.Label>Status</Form.Label>
-//               <Form.Select name="status" value={formData.status} onChange={handleChange}>
-//                 <option value="active">Active</option>
-//                 <option value="inactive">Inactive</option>
-//               </Form.Select>
-//             </Form.Group>
-
-//             <Form.Group className="mb-2">
-//               <Form.Label>Religious</Form.Label>
-//               <Form.Select name="religious" value={formData.religious} onChange={handleChange}>
-//                 <option value="">Select Religious</option>
-//                 {religiousList.map((r) => (
-//                   <option key={r._id} value={r._id}>{r.title}</option>
-//                 ))}
-//               </Form.Select>
-//             </Form.Group>
-
-//             <Form.Group className="mb-2">
-//               <Form.Label>Language</Form.Label>
-//               <Form.Select name="language" value={formData.language} onChange={handleChange}>
-//                 <option value="">Select Language</option>
-//                 {languageList.map((l) => (
-//                   <option key={l._id} value={l._id}>{l.name}</option>
-//                 ))}
-//               </Form.Select>
-//             </Form.Group>
-
-//             <Form.Group className="mb-3">
-//               <Form.Label>Upload Logo</Form.Label>
-//               <Form.Control type="file" name="logo" onChange={handleChange} />
-
-//               {formData.preview && (
-//                 <div className="text-center mt-2">
-//                   <Image src={formData.preview} width="100" height="100" rounded />
-//                 </div>
-//               )}
-//             </Form.Group>
-
-//             <Button type="submit" className="w-100" variant="primary">
-//               {editing ? "Update" : "Save"}
-//             </Button>
-
-//           </Form>
-//         </Modal.Body>
-
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default PoliticianManager;
-
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { Button, Modal, Form, Table, Image } from "react-bootstrap";
-// import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
-
-// const API_URL = "https://crafto-backend-zqcn.onrender.com/api/politicians";
-// const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
-// const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
-
-// const PoliticianManager = () => {
-//   const [politicians, setPoliticians] = useState([]);
-//   const [religiousList, setReligiousList] = useState([]);
-//   const [languageList, setLanguageList] = useState([]);
-
-//   const [showModal, setShowModal] = useState(false);
-//   const [editing, setEditing] = useState(null);
-
-//   const [search, setSearch] = useState("");
-//   const [page, setPage] = useState(1);
-//   const limit = 5;
-//   const [totalPages, setTotalPages] = useState(1);
-
-//   const [formData, setFormData] = useState({
-//     title: "",
-//     abbreviation: "",
-//     status: "active",
-//     religious: "",
-//     language: "",
-
+//     logoType: "image",
 //     logo: null,
 //     preview: "",
 
@@ -746,7 +1569,7 @@
 //     bannerY: 0,
 //   });
 
-//   // Fetch Data
+//   /* ================= FETCH ================= */
 //   const fetchData = async () => {
 //     const polRes = await axios.get(API_URL, { params: { search, page, limit } });
 //     const relRes = await axios.get(RELIGIOUS_API);
@@ -754,7 +1577,6 @@
 
 //     setPoliticians(polRes.data.politicians);
 //     setTotalPages(polRes.data.pages);
-
 //     setReligiousList(relRes.data.religiousList || relRes.data);
 //     setLanguageList(langRes.data);
 //   };
@@ -763,43 +1585,42 @@
 //     fetchData();
 //   }, [page, search]);
 
-//   // Handle Input & File Uploads
+//   /* ================= HANDLE CHANGE ================= */
 //   const handleChange = (e) => {
 //     const { name, value, files } = e.target;
 
-//     // LOGO upload
 //     if (name === "logo" && files?.length) {
 //       const file = files[0];
-//       setFormData({
-//         ...formData,
+//       setFormData((p) => ({
+//         ...p,
 //         logo: file,
 //         preview: URL.createObjectURL(file),
-//       });
+//       }));
 //       return;
 //     }
 
-//     // BANNER upload
 //     if (name === "banner" && files?.length) {
 //       const file = files[0];
-//       setFormData({
-//         ...formData,
+//       setFormData((p) => ({
+//         ...p,
 //         banner: file,
 //         bannerPreview: URL.createObjectURL(file),
-//       });
+//       }));
 //       return;
 //     }
 
-//     setFormData({ ...formData, [name]: value });
+//     setFormData((p) => ({ ...p, [name]: value }));
 //   };
 
-//   // Submit Form
+//   /* ================= SUBMIT ================= */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
 //     const data = new FormData();
 //     Object.keys(formData).forEach((key) => {
-//       if (key === "logo" || key === "banner") return;
-//       data.append(key, formData[key]);
+//       if (key !== "logo" && key !== "banner") {
+//         data.append(key, formData[key]);
+//       }
 //     });
 
 //     if (formData.logo) data.append("logo", formData.logo);
@@ -815,6 +1636,7 @@
 //     fetchData();
 //   };
 
+//   /* ================= DELETE ================= */
 //   const handleDelete = async (id) => {
 //     if (window.confirm("Delete this politician?")) {
 //       await axios.delete(`${API_URL}/${id}`);
@@ -822,9 +1644,9 @@
 //     }
 //   };
 
+//   /* ================= EDIT ================= */
 //   const handleEdit = (item) => {
 //     setEditing(item);
-
 //     setFormData({
 //       title: item.title,
 //       abbreviation: item.abbreviation,
@@ -832,6 +1654,7 @@
 //       religious: item.religious?._id || "",
 //       language: item.language?._id || "",
 
+//       logoType: item.logoType || "image",
 //       logo: null,
 //       preview: item.logo || "",
 
@@ -846,37 +1669,35 @@
 //       bannerX: item.bannerX || 0,
 //       bannerY: item.bannerY || 0,
 //     });
-
 //     setShowModal(true);
 //   };
 
+//   /* ================= RESET ================= */
 //   const handleClose = () => {
 //     setEditing(null);
+//     setShowModal(false);
 //     setFormData({
 //       title: "",
 //       abbreviation: "",
 //       status: "active",
 //       religious: "",
 //       language: "",
-
+//       logoType: "image",
 //       logo: null,
 //       preview: "",
 //       banner: null,
 //       bannerPreview: "",
-
 //       zoom: 1,
 //       offsetX: 0,
 //       offsetY: 0,
-
 //       bannerZoom: 1,
 //       bannerX: 0,
 //       bannerY: 0,
 //     });
-//     setShowModal(false);
 //   };
 
 //   return (
-//     <div className="p-4">
+//     <div className="p-3">
 //       {/* HEADER */}
 //       <div className="d-flex justify-content-between mb-3">
 //         <h4>Politician Manager</h4>
@@ -887,7 +1708,6 @@
 
 //       {/* SEARCH */}
 //       <input
-//         type="text"
 //         className="form-control mb-3"
 //         placeholder="Search politician..."
 //         value={search}
@@ -898,35 +1718,35 @@
 //       />
 
 //       {/* TABLE */}
-//       <Table bordered hover>
+//       <Table bordered hover responsive>
 //         <thead>
 //           <tr>
 //             <th>#</th>
 //             <th>Logo</th>
 //             <th>Banner</th>
 //             <th>Title</th>
-//             <th>Abbreviation</th>
 //             <th>Status</th>
-//             <th>Religious</th>
-//             <th>Language</th>
 //             <th>Actions</th>
 //           </tr>
 //         </thead>
-
 //         <tbody>
 //           {politicians.map((p, i) => (
 //             <tr key={p._id}>
 //               <td>{(page - 1) * limit + i + 1}</td>
-//               <td>{p.logo ? <Image width="60" src={p.logo} /> : "—"}</td>
-//               <td>{p.banner ? <Image width="60" src={p.banner} /> : "—"}</td>
-//               <td>{p.title}</td>
-//               <td>{p.abbreviation}</td>
-//               <td>{p.status}</td>
-//               <td>{p.religious?.title || "—"}</td>
-//               <td>{p.language?.name || "—"}</td>
-
 //               <td>
-//                 <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
+//                 {p.logoType === "video" ? (
+//                   <video src={p.logo} width="50" height="50" autoPlay loop muted />
+//                 ) : (
+//                   <Image src={p.logo} width="50" height="50" roundedCircle />
+//                 )}
+//               </td>
+//               <td>
+//                 {p.banner ? <Image src={p.banner} width="80" height="40" /> : "—"}
+//               </td>
+//               <td>{p.title}</td>
+//               <td>{p.status}</td>
+//               <td>
+//                 <Button size="sm" onClick={() => handleEdit(p)}>
 //                   <FaEdit />
 //                 </Button>{" "}
 //                 <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
@@ -938,19 +1758,6 @@
 //         </tbody>
 //       </Table>
 
-//       {/* PAGINATION */}
-//       <div className="d-flex justify-content-center gap-3 py-2">
-//         <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-//           Prev
-//         </Button>
-//         <span>
-//           Page {page} / {totalPages}
-//         </span>
-//         <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
-//           Next
-//         </Button>
-//       </div>
-
 //       {/* MODAL */}
 //       <Modal show={showModal} onHide={handleClose} centered size="lg">
 //         <Modal.Header closeButton>
@@ -959,176 +1766,78 @@
 
 //         <Modal.Body>
 //           <Form onSubmit={handleSubmit}>
+//             <Form.Control className="mb-2" name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+//             <Form.Control className="mb-2" name="abbreviation" placeholder="Abbreviation" value={formData.abbreviation} onChange={handleChange} />
 
-//             {/* BASIC FIELDS */}
-//             <Form.Group className="mb-2">
-//               <Form.Label>Title</Form.Label>
-//               <Form.Control name="title" value={formData.title} onChange={handleChange} />
-//             </Form.Group>
+//             <Form.Select className="mb-2" name="logoType" value={formData.logoType} onChange={handleChange}>
+//               <option value="image">Image Logo</option>
+//               <option value="video">Video Logo</option>
+//             </Form.Select>
 
-//             <Form.Group className="mb-2">
-//               <Form.Label>Abbreviation</Form.Label>
-//               <Form.Control name="abbreviation" value={formData.abbreviation} onChange={handleChange} />
-//             </Form.Group>
-//             {/* RELIGIOUS FIELD */}
-// <Form.Group className="mb-2">
-//   <Form.Label>Religious</Form.Label>
-//   <Form.Select
-//     name="religious"
-//     value={formData.religious}
-//     onChange={handleChange}
-//   >
-//     <option value="">Select Religious</option>
-//     {religiousList.map((r) => (
-//       <option key={r._id} value={r._id}>
-//         {r.title}
-//       </option>
-//     ))}
-//   </Form.Select>
-// </Form.Group>
+//             <Form.Control className="mb-2" type="file" name="logo" accept={formData.logoType === "video" ? "video/*" : "image/*"} onChange={handleChange} />
+//             <Form.Control className="mb-3" type="file" name="banner" accept="image/*" onChange={handleChange} />
 
-// {/* LANGUAGE FIELD */}
-// <Form.Group className="mb-2">
-//   <Form.Label>Language</Form.Label>
-//   <Form.Select
-//     name="language"
-//     value={formData.language}
-//     onChange={handleChange}
-//   >
-//     <option value="">Select Language</option>
-//     {languageList.map((l) => (
-//       <option key={l._id} value={l._id}>
-//         {l.name}
-//       </option>
-//     ))}
-//   </Form.Select>
-// </Form.Group>
+//             {/* BANNER PREVIEW */}
+//             {formData.bannerPreview && (
+//               <>
+//                 <img
+//                   src={formData.bannerPreview}
+//                   style={{
+//                     width: "100%",
+//                     height: 180,
+//                     objectFit: "cover",
+//                     transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
+//                   }}
+//                 />
 
+//                 <h6 className="mt-2">Banner Controls</h6>
+//                 <Form.Range name="bannerZoom" min="0.3" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
+//                 <Form.Range name="bannerX" min="-300" max="300" value={formData.bannerX} onChange={handleChange} />
+//                 <Form.Range name="bannerY" min="-300" max="300" value={formData.bannerY} onChange={handleChange} />
+//               </>
+//             )}
 
-//             {/* UPLOAD ROW */}
-//             <div className="row">
-//               <div className="col-md-6">
-//                 <Form.Group>
-//                   <Form.Label>Logo Upload</Form.Label>
-//                   <Form.Control type="file" name="logo" onChange={handleChange} />
-//                 </Form.Group>
-//               </div>
+//             {/* LOGO PREVIEW */}
+//             {formData.preview && (
+//               <>
+//                 <hr />
+//                 {formData.logoType === "video" ? (
+//                   <video src={formData.preview} width="150" autoPlay loop muted />
+//                 ) : (
+//                   <>
+//                     <div style={{ width: 150, height: 150, borderRadius: "50%", overflow: "hidden", margin: "auto" }}>
+//                       <img
+//                         src={formData.preview}
+//                         style={{
+//                           width: "100%",
+//                           height: "100%",
+//                           objectFit: "contain",
+//                           transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`
+//                         }}
+//                       />
+//                     </div>
 
-//               <div className="col-md-6">
-//                 <Form.Group>
-//                   <Form.Label>Banner Upload</Form.Label>
-//                   <Form.Control type="file" name="banner" onChange={handleChange} />
-//                 </Form.Group>
-//               </div>
-//             </div>
+//                     <h6 className="mt-2">Logo Controls</h6>
+//                     <Form.Range name="zoom" min="0.3" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+//                     <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
+//                     <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+//                   </>
+//                 )}
+//               </>
+//             )}
 
-//             {/* ⭐ CRAFTO LIVE PREVIEW ⭐ */}
-//       <div
-//         style={{
-//           width: 300,
-//           height: 300,
-//           position: "relative",
-//           border: "1px dashed #999",
-//           overflow: "hidden",
-//           margin: "20px auto",
-//           borderRadius: "12px",
-//           background: "#f5f5f5",
-//         }}
-//       >
-
-//         {/* BANNER */}
-//         {formData.bannerPreview && (
-//           <img
-//             src={formData.bannerPreview}
-//             alt="banner"
-//             style={{
-//               width: "100%",
-//               height: "100%",
-//               objectFit: "cover",
-//               position: "absolute",
-//               top: 0,
-//               left: 0,
-//               transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
-//             }}
-//           />
-//         )}
-
-//         {/* LOGO */}
-//         {formData.preview && (
-//           <div
-//             style={{
-//               width: 120,
-//               height: 120,
-//               position: "absolute",
-//               top: "50%",
-//               left: "50%",
-//               transform: "translate(-50%, -50%)",
-//               borderRadius: "50%",
-//               overflow: "hidden",
-//               border: "4px solid white",
-//               background: "white",
-//               boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-//             }}
-//           >
-//             <img
-//               src={formData.preview}
-//               alt="logo"
-//               style={{
-//                 width: "100%",
-//                 height: "100%",
-//                 objectFit: "contain",
-//                 transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
-//               }}
-//             />
-//           </div>
-//         )}
-//       </div>
-
-//             {/* LOGO CONTROLS */}
-//             <hr />
-//             <h6>Logo Controls</h6>
-
-//             <Form.Label>Zoom: {formData.zoom}</Form.Label>
-//             <Form.Range name="zoom" min="0.1" max="3" step="0.1"
-//               value={formData.zoom} onChange={handleChange} />
-
-//             <Form.Label>Move X: {formData.offsetX}px</Form.Label>
-//             <Form.Range name="offsetX" min="-200" max="200"
-//               value={formData.offsetX} onChange={handleChange} />
-
-//             <Form.Label>Move Y: {formData.offsetY}px</Form.Label>
-//             <Form.Range name="offsetY" min="-200" max="200"
-//               value={formData.offsetY} onChange={handleChange} />
-
-//             {/* BANNER CONTROLS */}
-//             <hr />
-//             <h6>Banner Controls</h6>
-
-//             <Form.Label>Zoom: {formData.bannerZoom}</Form.Label>
-//             <Form.Range name="bannerZoom" min="0.1" max="3" step="0.1"
-//               value={formData.bannerZoom} onChange={handleChange} />
-
-//             <Form.Label>Move X: {formData.bannerX}px</Form.Label>
-//             <Form.Range name="bannerX" min="-200" max="200"
-//               value={formData.bannerX} onChange={handleChange} />
-
-//             <Form.Label>Move Y: {formData.bannerY}px</Form.Label>
-//             <Form.Range name="bannerY" min="-200" max="200"
-//               value={formData.bannerY} onChange={handleChange} />
-
-//             <Button type="submit" className="w-100 mt-3" variant="primary">
+//             <Button type="submit" className="w-100 mt-3">
 //               {editing ? "Update" : "Save"}
 //             </Button>
-
 //           </Form>
 //         </Modal.Body>
-
 //       </Modal>
 //     </div>
 //   );
 // };
 
 // export default PoliticianManager;
+
 
 
 import React, { useEffect, useState } from "react";
@@ -1160,6 +1869,7 @@ const PoliticianManager = () => {
     religious: "",
     language: "",
 
+    logoType: "image",
     logo: null,
     preview: "",
 
@@ -1175,7 +1885,7 @@ const PoliticianManager = () => {
     bannerY: 0,
   });
 
-  // Fetch Data
+  /* ================= FETCH ================= */
   const fetchData = async () => {
     const polRes = await axios.get(API_URL, { params: { search, page, limit } });
     const relRes = await axios.get(RELIGIOUS_API);
@@ -1183,7 +1893,6 @@ const PoliticianManager = () => {
 
     setPoliticians(polRes.data.politicians);
     setTotalPages(polRes.data.pages);
-
     setReligiousList(relRes.data.religiousList || relRes.data);
     setLanguageList(langRes.data);
   };
@@ -1192,32 +1901,34 @@ const PoliticianManager = () => {
     fetchData();
   }, [page, search]);
 
-  // Handle Input & File Upload
+  /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "logo" && files?.length) {
-      setFormData({
-        ...formData,
-        logo: files[0],
-        preview: URL.createObjectURL(files[0]),
-      });
+      const file = files[0];
+      setFormData((p) => ({
+        ...p,
+        logo: file,
+        preview: URL.createObjectURL(file),
+      }));
       return;
     }
 
     if (name === "banner" && files?.length) {
-      setFormData({
-        ...formData,
-        banner: files[0],
-        bannerPreview: URL.createObjectURL(files[0]),
-      });
+      const file = files[0];
+      setFormData((p) => ({
+        ...p,
+        banner: file,
+        bannerPreview: URL.createObjectURL(file),
+      }));
       return;
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  // Submit
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -1241,7 +1952,7 @@ const PoliticianManager = () => {
     fetchData();
   };
 
-  // Delete
+  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     if (window.confirm("Delete this politician?")) {
       await axios.delete(`${API_URL}/${id}`);
@@ -1249,10 +1960,9 @@ const PoliticianManager = () => {
     }
   };
 
-  // Edit
+  /* ================= EDIT ================= */
   const handleEdit = (item) => {
     setEditing(item);
-
     setFormData({
       title: item.title,
       abbreviation: item.abbreviation,
@@ -1260,8 +1970,10 @@ const PoliticianManager = () => {
       religious: item.religious?._id || "",
       language: item.language?._id || "",
 
+      logoType: item.logoType || "image",
       logo: null,
       preview: item.logo || "",
+
       banner: null,
       bannerPreview: item.banner || "",
 
@@ -1273,19 +1985,20 @@ const PoliticianManager = () => {
       bannerX: item.bannerX || 0,
       bannerY: item.bannerY || 0,
     });
-
     setShowModal(true);
   };
 
-  // Reset Form
+  /* ================= RESET ================= */
   const handleClose = () => {
     setEditing(null);
+    setShowModal(false);
     setFormData({
       title: "",
       abbreviation: "",
       status: "active",
       religious: "",
       language: "",
+      logoType: "image",
       logo: null,
       preview: "",
       banner: null,
@@ -1297,23 +2010,20 @@ const PoliticianManager = () => {
       bannerX: 0,
       bannerY: 0,
     });
-    setShowModal(false);
   };
 
   return (
     <div className="p-3">
-
       {/* HEADER */}
-      <div className="d-flex flex-wrap justify-content-between gap-2 mb-3">
+      <div className="d-flex justify-content-between mb-3">
         <h4>Politician Manager</h4>
-        <Button onClick={() => setShowModal(true)} className="d-flex align-items-center gap-2">
+        <Button onClick={() => setShowModal(true)}>
           <FaPlus /> Add Politician
         </Button>
       </div>
 
       {/* SEARCH */}
       <input
-        type="text"
         className="form-control mb-3"
         placeholder="Search politician..."
         value={search}
@@ -1323,61 +2033,46 @@ const PoliticianManager = () => {
         }}
       />
 
-      {/* RESPONSIVE TABLE WRAPPER */}
-      <div className="table-responsive">
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Logo</th>
-              <th>Banner</th>
-              <th>Title</th>
-              <th>Abbreviation</th>
-              <th>Status</th>
-              <th>Religious</th>
-              <th>Language</th>
-              <th>Actions</th>
+      {/* TABLE */}
+      <Table bordered hover responsive>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Logo</th>
+            <th>Banner</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {politicians.map((p, i) => (
+            <tr key={p._id}>
+              <td>{(page - 1) * limit + i + 1}</td>
+              <td>
+                {p.logoType === "video" ? (
+                  <video src={p.logo} width="50" height="50" autoPlay loop muted />
+                ) : (
+                  <Image src={p.logo} width="50" height="50" roundedCircle />
+                )}
+              </td>
+              <td>
+                {p.banner ? <Image src={p.banner} width="80" height="40" /> : "—"}
+              </td>
+              <td>{p.title}</td>
+              <td>{p.status}</td>
+              <td>
+                <Button size="sm" onClick={() => handleEdit(p)}>
+                  <FaEdit />
+                </Button>{" "}
+                <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
+                  <FaTrash />
+                </Button>
+              </td>
             </tr>
-          </thead>
-
-          <tbody>
-            {politicians.map((p, i) => (
-              <tr key={p._id}>
-                <td>{(page - 1) * limit + i + 1}</td>
-                <td>{p.logo ? <Image width="50" height="50" rounded src={p.logo} /> : "—"}</td>
-                <td>{p.banner ? <Image width="60" height="40" src={p.banner} /> : "—"}</td>
-                <td>{p.title}</td>
-                <td>{p.abbreviation}</td>
-                <td>{p.status}</td>
-                <td>{p.religious?.title || "—"}</td>
-                <td>{p.language?.name || "—"}</td>
-
-                <td className="d-flex gap-2">
-                  <Button size="sm" variant="warning" onClick={() => handleEdit(p)}>
-                    <FaEdit />
-                  </Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(p._id)}>
-                    <FaTrash />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-
-      {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-3 py-3 flex-wrap">
-        <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Prev
-        </Button>
-        <span>
-          Page {page} / {totalPages}
-        </span>
-        <Button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
-          Next
-        </Button>
-      </div>
+          ))}
+        </tbody>
+      </Table>
 
       {/* MODAL */}
       <Modal show={showModal} onHide={handleClose} centered size="lg">
@@ -1387,134 +2082,109 @@ const PoliticianManager = () => {
 
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
+            <Form.Control className="mb-2" name="title" placeholder="Title" value={formData.title} onChange={handleChange} />
+            <Form.Control className="mb-2" name="abbreviation" placeholder="Abbreviation" value={formData.abbreviation} onChange={handleChange} />
+               {/* STATUS */}
+<Form.Select
+  className="mb-2"
+  name="status"
+  value={formData.status}
+  onChange={handleChange}
+>
+  <option value="active">Active</option>
+  <option value="inactive">Inactive</option>
+</Form.Select>
 
-            {/* INPUTS */}
-            <Form.Group className="mb-2">
-              <Form.Label>Title</Form.Label>
-              <Form.Control name="title" value={formData.title} onChange={handleChange} />
-            </Form.Group>
+{/* RELIGIOUS */}
+<Form.Select
+  className="mb-2"
+  name="religious"
+  value={formData.religious}
+  onChange={handleChange}
+>
+  <option value="">Select Religion</option>
+  {religiousList.map((r) => (
+    <option key={r._id} value={r._id}>
+      {r.title}
+    </option>
+  ))}
+</Form.Select>
 
-            <Form.Group className="mb-2">
-              <Form.Label>Abbreviation</Form.Label>
-              <Form.Control name="abbreviation" value={formData.abbreviation} onChange={handleChange} />
-            </Form.Group>
+{/* LANGUAGE */}
+<Form.Select
+  className="mb-2"
+  name="language"
+  value={formData.language}
+  onChange={handleChange}
+>
+  <option value="">Select Language</option>
+  {languageList.map((l) => (
+    <option key={l._id} value={l._id}>
+      {l.title}
+    </option>
+  ))}
+</Form.Select>
 
-            <Form.Group className="mb-2">
-              <Form.Label>Religious</Form.Label>
-              <Form.Select name="religious" value={formData.religious} onChange={handleChange}>
-                <option value="">Select Religious</option>
-                {religiousList.map((r) => (
-                  <option key={r._id} value={r._id}>{r.title}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+            <Form.Select className="mb-2" name="logoType" value={formData.logoType} onChange={handleChange}>
+              <option value="image">Image Logo</option>
+              <option value="video">Video Logo</option>
+            </Form.Select>
 
-            <Form.Group className="mb-2">
-              <Form.Label>Language</Form.Label>
-              <Form.Select name="language" value={formData.language} onChange={handleChange}>
-                <option value="">Select Language</option>
-                {languageList.map((l) => (
-                  <option key={l._id} value={l._id}>{l.name}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
+            <Form.Control className="mb-2" type="file" name="logo" accept={formData.logoType === "video" ? "video/*" : "image/*"} onChange={handleChange} />
+            <Form.Control className="mb-3" type="file" name="banner" accept="image/*" onChange={handleChange} />
 
-            {/* FILE INPUTS */}
-            <div className="row">
-              <div className="col-md-6 mb-2">
-                <Form.Label>Logo Upload</Form.Label>
-                <Form.Control type="file" name="logo" onChange={handleChange} />
-              </div>
-
-              <div className="col-md-6 mb-2">
-                <Form.Label>Banner Upload</Form.Label>
-                <Form.Control type="file" name="banner" onChange={handleChange} />
-              </div>
-            </div>
-
-            {/* PREVIEW BOX */}
-            <div
-              style={{
-                width: "100%",
-                maxWidth: 320,
-                height: 320,
-                margin: "20px auto",
-                border: "1px dashed #aaa",
-                borderRadius: 12,
-                position: "relative",
-                overflow: "hidden",
-                background: "#eee",
-              }}
-            >
-              {formData.bannerPreview && (
+            {/* BANNER PREVIEW */}
+            {formData.bannerPreview && (
+              <>
                 <img
                   src={formData.bannerPreview}
                   style={{
                     width: "100%",
-                    height: "100%",
+                    height: 180,
                     objectFit: "cover",
-                    position: "absolute",
-                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`,
+                    transform: `scale(${formData.bannerZoom}) translate(${formData.bannerX}px, ${formData.bannerY}px)`
                   }}
                 />
-              )}
 
-              {formData.preview && (
-                <div
-                  style={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    border: "4px solid white",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  <img
-                    src={formData.preview}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+                <h6 className="mt-2">Banner Controls</h6>
+                <Form.Range name="bannerZoom" min="0.3" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
+                <Form.Range name="bannerX" min="-300" max="300" value={formData.bannerX} onChange={handleChange} />
+                <Form.Range name="bannerY" min="-300" max="300" value={formData.bannerY} onChange={handleChange} />
+              </>
+            )}
 
-            {/* CONTROLS */}
-            <h6>Logo Controls</h6>
+            {/* LOGO PREVIEW */}
+            {formData.preview && (
+              <>
+                <hr />
+                {formData.logoType === "video" ? (
+                  <video src={formData.preview} width="150" autoPlay loop muted />
+                ) : (
+                  <>
+                    <div style={{ width: 150, height: 150, borderRadius: "50%", overflow: "hidden", margin: "auto" }}>
+                      <img
+                        src={formData.preview}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          transform: `scale(${formData.zoom}) translate(${formData.offsetX}px, ${formData.offsetY}px)`
+                        }}
+                      />
+                    </div>
 
-            <Form.Label>Zoom</Form.Label>
-            <Form.Range name="zoom" min="0.2" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+                    <h6 className="mt-2">Logo Controls</h6>
+                    <Form.Range name="zoom" min="0.3" max="3" step="0.1" value={formData.zoom} onChange={handleChange} />
+                    <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
+                    <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
+                  </>
+                )}
+              </>
+            )}
 
-            <Form.Label>Move X</Form.Label>
-            <Form.Range name="offsetX" min="-200" max="200" value={formData.offsetX} onChange={handleChange} />
-
-            <Form.Label>Move Y</Form.Label>
-            <Form.Range name="offsetY" min="-200" max="200" value={formData.offsetY} onChange={handleChange} />
-
-            <hr />
-
-            <h6>Banner Controls</h6>
-
-            <Form.Label>Zoom</Form.Label>
-            <Form.Range name="bannerZoom" min="0.2" max="3" step="0.1" value={formData.bannerZoom} onChange={handleChange} />
-
-            <Form.Label>Move X</Form.Label>
-            <Form.Range name="bannerX" min="-200" max="200" value={formData.bannerX} onChange={handleChange} />
-
-            <Form.Label>Move Y</Form.Label>
-            <Form.Range name="bannerY" min="-200" max="200" value={formData.bannerY} onChange={handleChange} />
-
-            <Button type="submit" className="w-100 mt-3" variant="primary">
+            <Button type="submit" className="w-100 mt-3">
               {editing ? "Update" : "Save"}
             </Button>
-
           </Form>
         </Modal.Body>
       </Modal>

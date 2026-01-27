@@ -795,6 +795,400 @@
 //   );
 // }
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import {
+//   Container,
+//   Card,
+//   Button,
+//   Table,
+//   Modal,
+//   Form,
+//   Image,
+//   Row,
+//   Col,
+//   Pagination,
+// } from "react-bootstrap";
+// import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+
+// const API_URL = "https://crafto-backend-zqcn.onrender.com/api/categories";
+// const RELIGIOUS_API = "https://crafto-backend-zqcn.onrender.com/api/religious";
+// const LANGUAGE_API = "https://crafto-backend-zqcn.onrender.com/api/languages";
+
+// export default function Categories() {
+//   const [categories, setCategories] = useState([]);
+//   const [religiousList, setReligiousList] = useState([]);
+//   const [languageList, setLanguageList] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [editingCategory, setEditingCategory] = useState(null);
+
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     orientation: "portrait",
+//     status: "active",
+//     religious: "",
+//     language: "",
+//     file: null,
+//     preview: "",
+//   });
+
+//   // ⭐ Pagination States Added
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [pageSize, setPageSize] = useState(10);
+//   const [search, setSearch] = useState("");
+
+//   // Fetch all data
+//   const fetchAllData = async () => {
+//     try {
+//       const [catRes, relRes, langRes] = await Promise.all([
+//         axios.get(API_URL),
+//         axios.get(RELIGIOUS_API),
+//         axios.get(LANGUAGE_API),
+//       ]);
+
+//       setCategories(catRes.data);
+//       setReligiousList(relRes.data.religiousList || relRes.data);
+//       setLanguageList(langRes.data);
+//     } catch (error) {
+//       console.error("❌ Fetch error:", error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchAllData();
+//   }, []);
+
+//   // Handle input change
+//   const handleChange = (e) => {
+//     const { name, value, files } = e.target;
+
+//     if (files && files.length > 0) {
+//       const file = files[0];
+//       setFormData({
+//         ...formData,
+//         file,
+//         preview: URL.createObjectURL(file),
+//       });
+//     } else {
+//       setFormData({ ...formData, [name]: value });
+//     }
+//   };
+
+//   // Save Data
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const data = new FormData();
+//       Object.entries(formData).forEach(([key, val]) => {
+//         if (key !== "preview" && val !== null) data.append(key, val);
+//       });
+
+//       if (editingCategory) {
+//         await axios.put(`${API_URL}/${editingCategory._id}`, data);
+//       } else {
+//         await axios.post(API_URL, data);
+//       }
+
+//       handleClose();
+//       fetchAllData();
+//     } catch (error) {
+//       console.error("❌ Save error:", error);
+//     }
+//   };
+
+//   // Delete Category
+//   const handleDelete = async (id) => {
+//     if (!window.confirm("Delete this category?")) return;
+
+//     await axios.delete(`${API_URL}/${id}`);
+//     fetchAllData();
+//   };
+
+//   // Edit Category
+//   const handleEdit = (cat) => {
+//     setEditingCategory(cat);
+
+//     setFormData({
+//       name: cat.name,
+//       orientation: cat.orientation,
+//       status: cat.status,
+//       religious: cat.religious?._id || "",
+//       language: cat.language?._id || "",
+//       file: null,
+//       preview: cat.filePath || "",
+//     });
+
+//     setShowModal(true);
+//   };
+
+//   // Reset Form
+//   const handleClose = () => {
+//     setEditingCategory(null);
+//     setShowModal(false);
+
+//     setFormData({
+//       name: "",
+//       orientation: "portrait",
+//       status: "active",
+//       religious: "",
+//       language: "",
+//       file: null,
+//       preview: "",
+//     });
+//   };
+
+//   // ⭐ SEARCH + PAGINATION LOGIC
+//   const filtered = categories.filter((c) =>
+//     c.name?.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   const totalPages = Math.ceil(filtered.length / pageSize);
+
+//   const paginatedCategories = filtered.slice(
+//     (currentPage - 1) * pageSize,
+//     currentPage * pageSize
+//   );
+
+//   const goToPage = (page) => {
+//     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+//   };
+
+//   return (
+//     <Container className="mt-4">
+//       <Card className="p-3 shadow-sm">
+
+//         {/* ⭐ Search + PageSize Row */}
+//         <Row className="mb-3">
+//           <Col md={4}>
+//             <Form.Control
+//               placeholder="Search category..."
+//               value={search}
+//               onChange={(e) => {
+//                 setSearch(e.target.value);
+//                 setCurrentPage(1);
+//               }}
+//             />
+//           </Col>
+
+//           <Col md={2}>
+//             <Form.Select
+//               value={pageSize}
+//               onChange={(e) => {
+//                 setPageSize(Number(e.target.value));
+//                 setCurrentPage(1);
+//               }}
+//             >
+//               <option value="5">5 / page</option>
+//               <option value="10">10 / page</option>
+//               <option value="20">20 / page</option>
+//               <option value="50">50 / page</option>
+//             </Form.Select>
+//           </Col>
+
+//           <Col className="text-end">
+//             <Button onClick={() => setShowModal(true)}>
+//               <FaPlus className="me-2" /> Add Category
+//             </Button>
+//           </Col>
+//         </Row>
+
+//         {/* MAIN TABLE */}
+//         <Table striped bordered hover responsive>
+//           <thead>
+//             <tr>
+//               <th>#</th>
+//               <th>Preview</th>
+//               <th>Name</th>
+//               <th>Orientation</th>
+//               <th>Status</th>
+//               <th>Religious</th>
+//               <th>Language</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {paginatedCategories.length ? (
+//               paginatedCategories.map((cat, index) => (
+//                 <tr key={cat._id}>
+//                   <td>{(currentPage - 1) * pageSize + index + 1}</td>
+
+//                   <td>
+//                     {cat.filePath ? (
+//                       <Image
+//                         src={cat.filePath}
+//                         rounded
+//                         width="60"
+//                         height="60"
+//                       />
+//                     ) : (
+//                       "No Image"
+//                     )}
+//                   </td>
+
+//                   <td>{cat.name}</td>
+//                   <td>{cat.orientation}</td>
+//                   <td>{cat.status}</td>
+//                   <td>{cat.religious?.title || "—"}</td>
+//                   <td>{cat.language?.name || "—"}</td>
+
+//                   <td>
+//                     <Button
+//                       variant="warning"
+//                       size="sm"
+//                       className="me-2"
+//                       onClick={() => handleEdit(cat)}
+//                     >
+//                       <FaEdit />
+//                     </Button>
+
+//                     <Button
+//                       variant="danger"
+//                       size="sm"
+//                       onClick={() => handleDelete(cat._id)}
+//                     >
+//                       <FaTrash />
+//                     </Button>
+//                   </td>
+//                 </tr>
+//               ))
+//             ) : (
+//               <tr>
+//                 <td colSpan="8" className="text-center">
+//                   No Categories Found
+//                 </td>
+//               </tr>
+//             )}
+//           </tbody>
+//         </Table>
+
+//         {/* ⭐ PAGINATION UI */}
+//         <Pagination className="mt-3 justify-content-center">
+//           <Pagination.Prev
+//             disabled={currentPage === 1}
+//             onClick={() => goToPage(currentPage - 1)}
+//           />
+
+//           {[...Array(totalPages)].map((_, i) => (
+//             <Pagination.Item
+//               key={i}
+//               active={currentPage === i + 1}
+//               onClick={() => goToPage(i + 1)}
+//             >
+//               {i + 1}
+//             </Pagination.Item>
+//           ))}
+
+//           <Pagination.Next
+//             disabled={currentPage === totalPages}
+//             onClick={() => goToPage(currentPage + 1)}
+//           />
+//         </Pagination>
+//       </Card>
+
+//       {/* MODAL SAME AS BEFORE */}
+//       <Modal show={showModal} onHide={handleClose} centered>
+//         <Modal.Header closeButton>
+//           <Modal.Title>
+//             {editingCategory ? "Edit Category" : "Add Category"}
+//           </Modal.Title>
+//         </Modal.Header>
+
+//         <Modal.Body>
+//           <Form onSubmit={handleSubmit}>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Category Name</Form.Label>
+//               <Form.Control
+//                 name="name"
+//                 value={formData.name}
+//                 onChange={handleChange}
+//                 required
+//               />
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Orientation</Form.Label>
+//               <Form.Select
+//                 name="orientation"
+//                 value={formData.orientation}
+//                 onChange={handleChange}
+//               >
+//                 <option value="portrait">Portrait</option>
+//                 <option value="landscape">Landscape</option>
+//               </Form.Select>
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Status</Form.Label>
+//               <Form.Select
+//                 name="status"
+//                 value={formData.status}
+//                 onChange={handleChange}
+//               >
+//                 <option value="active">Active</option>
+//                 <option value="inactive">Inactive</option>
+//               </Form.Select>
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Religious</Form.Label>
+//               <Form.Select
+//                 name="religious"
+//                 value={formData.religious}
+//                 onChange={handleChange}
+//               >
+//                 <option value="">Select Religious</option>
+//                 {religiousList.map((r) => (
+//                   <option key={r._id} value={r._id}>
+//                     {r.title}
+//                   </option>
+//                 ))}
+//               </Form.Select>
+//             </Form.Group>
+
+//             <Form.Group className="mb-3">
+//               <Form.Label>Language</Form.Label>
+//               <Form.Select
+//                 name="language"
+//                 value={formData.language}
+//                 onChange={handleChange}
+//               >
+//                 <option value="">Select Language</option>
+//                 {languageList.map((l) => (
+//                   <option key={l._id} value={l._id}>
+//                     {l.name}
+//                   </option>
+//                 ))}
+//               </Form.Select>
+//             </Form.Group>
+
+//             <Form.Group>
+//               <Form.Label>Upload Image</Form.Label>
+//               <Form.Control type="file" name="file" onChange={handleChange} />
+//               {formData.preview && (
+//                 <Image
+//                   src={formData.preview}
+//                   width="120"
+//                   height="120"
+//                   rounded
+//                   className="mt-2"
+//                 />
+//               )}
+//             </Form.Group>
+
+//             <div className="text-center mt-3">
+//               <Button type="submit" variant="primary">
+//                 {editingCategory ? "Update" : "Save"}
+//               </Button>
+//             </div>
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </Container>
+//   );
+// }
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -832,12 +1226,12 @@ export default function Categories() {
     preview: "",
   });
 
-  // ⭐ Pagination States Added
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
 
-  // Fetch all data
+  // ================= FETCH =================
   const fetchAllData = async () => {
     try {
       const [catRes, relRes, langRes] = await Promise.all([
@@ -858,7 +1252,7 @@ export default function Categories() {
     fetchAllData();
   }, []);
 
-  // Handle input change
+  // ================= HANDLE CHANGE =================
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -874,13 +1268,16 @@ export default function Categories() {
     }
   };
 
-  // Save Data
+  // ================= SAVE =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = new FormData();
+
       Object.entries(formData).forEach(([key, val]) => {
-        if (key !== "preview" && val !== null) data.append(key, val);
+        if (key !== "preview" && val !== null) {
+          data.append(key, val);
+        }
       });
 
       if (editingCategory) {
@@ -896,18 +1293,16 @@ export default function Categories() {
     }
   };
 
-  // Delete Category
+  // ================= DELETE =================
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this category?")) return;
-
     await axios.delete(`${API_URL}/${id}`);
     fetchAllData();
   };
 
-  // Edit Category
+  // ================= EDIT =================
   const handleEdit = (cat) => {
     setEditingCategory(cat);
-
     setFormData({
       name: cat.name,
       orientation: cat.orientation,
@@ -917,15 +1312,13 @@ export default function Categories() {
       file: null,
       preview: cat.filePath || "",
     });
-
     setShowModal(true);
   };
 
-  // Reset Form
+  // ================= RESET =================
   const handleClose = () => {
     setEditingCategory(null);
     setShowModal(false);
-
     setFormData({
       name: "",
       orientation: "portrait",
@@ -937,13 +1330,12 @@ export default function Categories() {
     });
   };
 
-  // ⭐ SEARCH + PAGINATION LOGIC
+  // ================= FILTER + PAGINATION =================
   const filtered = categories.filter((c) =>
     c.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalPages = Math.ceil(filtered.length / pageSize);
-
   const paginatedCategories = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -957,7 +1349,7 @@ export default function Categories() {
     <Container className="mt-4">
       <Card className="p-3 shadow-sm">
 
-        {/* ⭐ Search + PageSize Row */}
+        {/* SEARCH + PAGE SIZE */}
         <Row className="mb-3">
           <Col md={4}>
             <Form.Control
@@ -992,7 +1384,7 @@ export default function Categories() {
           </Col>
         </Row>
 
-        {/* MAIN TABLE */}
+        {/* TABLE */}
         <Table striped bordered hover responsive>
           <thead>
             <tr>
@@ -1015,12 +1407,7 @@ export default function Categories() {
 
                   <td>
                     {cat.filePath ? (
-                      <Image
-                        src={cat.filePath}
-                        rounded
-                        width="60"
-                        height="60"
-                      />
+                      <Image src={cat.filePath} rounded width="60" height="60" />
                     ) : (
                       "No Image"
                     )}
@@ -1041,7 +1428,6 @@ export default function Categories() {
                     >
                       <FaEdit />
                     </Button>
-
                     <Button
                       variant="danger"
                       size="sm"
@@ -1062,7 +1448,7 @@ export default function Categories() {
           </tbody>
         </Table>
 
-        {/* ⭐ PAGINATION UI */}
+        {/* PAGINATION */}
         <Pagination className="mt-3 justify-content-center">
           <Pagination.Prev
             disabled={currentPage === 1}
@@ -1086,7 +1472,7 @@ export default function Categories() {
         </Pagination>
       </Card>
 
-      {/* MODAL SAME AS BEFORE */}
+      {/* MODAL */}
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -1096,7 +1482,6 @@ export default function Categories() {
 
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-
             <Form.Group className="mb-3">
               <Form.Label>Category Name</Form.Label>
               <Form.Control
