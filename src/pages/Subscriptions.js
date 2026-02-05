@@ -1533,12 +1533,12 @@ const Subscriptions = () => {
   // ----------------------------------
   return (
     <Container fluid>
-      <div className="d-flex justify-content-between mb-4">
+      {/* <div className="d-flex justify-content-between mb-4">
         <h2>Subscriptions Management</h2>
         <Button variant="success" onClick={() => setShowModal(true)}>
           + Add Subscription
         </Button>
-      </div>
+      </div> */}
 
       {/* Search */}
       <div className="d-flex gap-3 mb-3">
@@ -1602,7 +1602,7 @@ const Subscriptions = () => {
                         </Badge>
                       </td>
                       <td>
-                        {sub.status !== "active" && (
+                        {/* {sub.status !== "active" && (
                           <Button
                             size="sm"
                             className="me-2"
@@ -1610,7 +1610,7 @@ const Subscriptions = () => {
                           >
                             Pay
                           </Button>
-                        )}
+                        )} */}
                         <Button
                           size="sm"
                           variant="danger"
@@ -1649,7 +1649,7 @@ const Subscriptions = () => {
       </Card>
 
       {/* Add Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      {/* <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add Subscription</Modal.Title>
         </Modal.Header>
@@ -1694,7 +1694,7 @@ const Subscriptions = () => {
             </div>
           </Form>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </Container>
   );
 };

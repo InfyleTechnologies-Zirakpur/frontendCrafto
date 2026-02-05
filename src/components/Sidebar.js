@@ -175,7 +175,7 @@ import { Nav } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   FaTachometerAlt, FaVideo, FaLayerGroup, FaUsers, 
-  FaCreditCard, FaSignOutAlt, FaImages,FaBell,FaPenFancy
+  FaCreditCard, FaSignOutAlt, FaImages,FaBell,FaPenFancy, FaBullhorn, FaClipboardList, FaCog 
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -200,16 +200,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
      { path: '/birthday-templates', name: 'Birthday Templates', icon: <FaImages /> },
      { path:'/anniversary-templates', name:'Anniversary Templates',icon:<FaImages/>},
     { path: '/users', name: 'Users', icon: <FaUsers /> },
+     { path: '/ads', name: 'Ads Manager', icon: <FaBullhorn /> }, 
     { path: '/admin/notifications', name: 'Push Notifications', icon: <FaBell /> },
-    { path: '/subscriptions', name: 'Subscriptions', icon: <FaLayerGroup /> },
-    { path: '/admob', name: 'AdMob', icon: <FaCreditCard /> },
+    { path: '/plans', name: 'Subscriptions', icon: <FaClipboardList /> },
+    { path: '/subscriptions', name: 'Transaction', icon: <FaLayerGroup /> },
+    // { path: '/admob', name: 'AdMob', icon: <FaCreditCard /> },
+    { path: '/googleads', name: 'AdMob', icon: <FaBullhorn /> },
     { path: '/reports', name: 'Reports', icon: <FaImages /> },
     { path: '/road-banners', name: 'Road Banners', icon: <FaImages /> },
     { path: '/religious', name: 'Religious', icon: <FaCreditCard /> },
     //  { path: '/notification', name: 'Push Notifications', icon: <FaBell /> },
     { path: '/mycreations', name: 'My Creations', icon: <FaCreditCard /> },
     // { path: '/analyticspage', name: 'AnalyticsPage', icon: <FaImages /> },
-    { path: '/language-manager', name: 'LanguageManager', icon: <FaImages /> }
+    { path: '/language-manager', name: 'LanguageManager', icon: <FaImages /> },
+    { path: '/payment-settings', name: 'Payment Settings', icon: <FaCog /> },
   ];
 
   return (

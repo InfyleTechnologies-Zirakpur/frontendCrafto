@@ -262,6 +262,10 @@ import Notification from './pages/Notification';
 import RoadBannerManager from "./pages/RoadBanners";
 import AdminNotifications from "./pages/AdminNotifications";
 import PoliticianPostForm from "./pages/PoliticianPostForm";
+import AdsAdmin from './pages/AdsAdmin';
+import PlanManager from "./pages/PlanManager";
+import PaymentSettings from "./pages/PaymentSettings";
+import AdsDashboard from './pages/AdsDashboard';
 
 
 
@@ -302,9 +306,13 @@ function App() {
             />
             <Route path="categories" element={<Categories />} />
             <Route path="users" element={<Users />} />
+            <Route path="ads" element={<AdsAdmin />} />
+            <Route path="plans" element={<PlanManager />} />
             <Route path="subscriptions" element={<Subscriptions />} />
+            <Route path="payment-settings" element={<PaymentSettings />} /> 
             <Route path="politicians" element={<Politician />} />
             <Route path="politician-posts/create" element={<PoliticianPostForm />} />
+             <Route path="googleads" element={<AdsDashboard />} />
 
             <Route path="admob" element={<AdMob />} />
             <Route path="religious" element={<Religious />} />
